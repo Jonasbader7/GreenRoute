@@ -24,6 +24,7 @@
 2. **Pro Fahrzeug bewerten:** Jeder Abschnitt bekommt pro Fahrzeugklasse einen Zustand: **validiert** (passt nach Daten), **unvalidiert** (ungeklärt) oder **gesperrt**. Gewichtsgrenzen und die Regel «ohne Signal mindestens 4 m Höhe» stammen vom Tiefbauamt der Stadt Bern.
 3. **Routen:** Der Router fährt zuerst nur über validierte Strassen. Gibt es so keinen Weg, zeigt er eine gekennzeichnete Ausweichroute; ungeklärte Abschnitte zählen dabei mit doppelter Zeit. Gesperrte Abschnitte bietet er nie an.
 4. **Einsatzablauf:** Die Web-App simuliert Notruf, Disposition, Route senden und die Wahl der Route durch die Crew (Zentrale und Fahrzeug, auch auf dem Handy).
+5. **Während der Fahrt:** Weicht das Fahrzeug ab, rechnet GreenRoute ab dem Standort neu. Die Crew kann ein Hindernis melden; für andere Fahrzeuge gilt es erst, wenn die Zentrale es bestätigt.
 
 Beispiel S1 in der App: Von Gasel nach Liebewil fährt der Notarzt (A) wie Google Maps über die Mengestorfstrasse und durch eine Unterführung mit 3,50 m, 6,4 min. Die grosse Feuerwehr (D, 3,66 m hoch) passt nicht durch. GreenRoute schickt sie auf einen Umweg, 13,8 min. Würde sie wie A fahren und vor der Unterführung umkehren, bräuchte sie rund 24 min (Modellfahrzeiten ohne Verkehr, Stand 11.11.2026).
 
@@ -36,7 +37,7 @@ Dieses Repository enthält die Web-App und im Ordner [`pipeline/`](pipeline/) di
 
 ## Dateien
 
-- `index.html` – Web-App (Karte, Routing für die Fahrzeugklassen A–D, Routenvergleich, Einsatzablauf Zentrale/Fahrzeug, Strassenbefund, Ebenen)
+- `index.html` – Web-App (Karte, Routing für die Fahrzeugklassen A–D, Routenvergleich, Einsatzablauf Zentrale/Fahrzeug mit Fahrt und Neuberechnung, Hindernismeldungen, Strassenbefund, Ebenen)
 - `bors_router.js` – Routing-Kern, direkte Übertragung des QGIS-Routers V9.2e (Ersatzanschluss nach Gesamtkosten)
 - `netz.json` – Strassennetz V9.2j mit Bewertung je Fahrzeugklasse (Netzmaster `BORS_Netzmaster_V9_20261111_1709`)
 - `netz_aenderungen.csv` – die 1 265 Statuswechsel gegenüber Version 17 (Abschnitt × Klasse, alle von ungeklärt nach validiert)
@@ -47,6 +48,23 @@ Dieses Repository enthält die Web-App und im Ordner [`pipeline/`](pipeline/) di
 ## Versionsgeschichte
 
 Was sich von Version zu Version geändert hat, neuste zuerst.
+
+### Neu in Version 20 (20.11.2026): Route folgt dem Fahrzeug, Hindernisse melden, mehrere Fahrzeuge
+
+Umsetzung einer Rückmeldung aus der Sanitätsnotrufzentrale 144 von Schutz und Rettung Bern (19.11.2026). Router (`bors_router.js`), `netz.json` und QGIS sind unverändert; alles Neue wirkt nur zur Laufzeit in der Web-App, wie Demo-Sperrung und Baustellen. Nur `index.html` und dieses README sind geändert.
+- **Fahrt und Neuberechnung:** Nach dem Quittieren lässt sich die Fahrt simulieren (Tempo ×4, ×10 oder ×1) oder mit dem GPS des Geräts verfolgen. Weicht das Fahrzeug ab (zwei Positionen nacheinander mehr als 35 m neben der Route), rechnet GreenRoute ohne Eingabe neu, ab dem Standort und in Fahrtrichtung. Gewendet wird nur, wenn es anders nicht geht oder nach einer Hindernismeldung. Die gewählte Routenart bleibt; gibt es ab dem Standort keine validierte Route mehr, sagt das Fahrzeug es ausdrücklich. Ungeklärte Stellen und Kurvenhinweise hinter dem Fahrzeug verschwinden, die Karte folgt dem Fahrzeug. «Abweichung simulieren» lässt das simulierte Fahrzeug an der nächsten Kreuzung in eine andere Strasse abbiegen.
+- **Hindernis melden:** Zwei Tipps: «Strasse gesperrt» (gilt für alle) oder «zu eng oder zu tief» (gilt für die eigene und alle grösseren Klassen). Das eigene Fahrzeug meidet den Abschnitt sofort. Die Zentrale sieht die Meldung und entscheidet: Bestätigen sperrt den Abschnitt für alle betroffenen Fahrzeuge, die dann selbst neu rechnen; «Nicht übernehmen» lässt die Meldung nur für das meldende Fahrzeug gelten. Bestätigte Meldungen gelten höchstens 24 Stunden und lassen sich aufheben.
+- **Mehrere Fahrzeuge:** Die Zentrale sieht Standort, Restroute und jede Neuberechnung der Fahrzeuge unterwegs. Nach Modellfahrzeit weist GreenRoute darauf hin, wenn zwei Fahrzeuge dieselbe Zufahrt anfahren, sich in einer Engstelle begegnen (Fahrbahn schmaler als beide Fahrzeuge plus 0.5 m) oder etwa gleichzeitig (±20 s) aus verschiedenen Richtungen an dieselbe Kreuzung kommen. Die Routenwahl ändert sich dadurch nicht.
+
+Technisch: Die Fahrtrichtung wirkt nur auf die Anbindung des Starts an die Strasse, auf der das Fahrzeug fährt (eine Rechnung lang). Meldungen setzen wie die Demo-Sperrung Kosten zur Laufzeit auf 0. Positionen und Meldungen laufen wie die Aufträge über den Speicher des Browsers, nicht zwischen Geräten.
+
+Geprüft am 20.11.2026 im Code (node) und lokal im Browser. Nicht im Einsatz, nicht vor Ort und nicht mit echtem GPS unterwegs geprüft:
+- Fahrtrichtung: 80 von 80 Neuberechnungen auf Strassen mit Gegenverkehr starten in Fahrtrichtung.
+- Sperren und temporäre Sperren stellen die Kosten exakt wieder her; Demo-Sperrung setzen und aufheben ergibt dieselben Routen wie vorher.
+- Ein zweites Fenster rechnet die nachgeführte Route mit derselben Kennung nach (auch nach Neuladen).
+- Hinweise «Engstelle» und «Kreuzung» mit konstruierten Fällen geprüft (Säriswilstrasse 4.2 m; Viktoriastrasse / Schönburgstrasse).
+- GPS mit simulierten Positionen: ungenau, ausserhalb des Gebiets, Abweichung mit Neuberechnung.
+- S1–S4 mit denselben Zahlen wie V19, Beamer «Beides» und Handy von Notruf bis abgeschlossen, Zurückziehen während der Fahrt, Dark/Light, keine Konsolenfehler.
 
 ### Neu in Version 19 (11.11.2026): Mehr validierte Strassen aus dem Fahrkorridor
 

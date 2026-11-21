@@ -365,6 +365,27 @@ ol.steps li.jetzt{font-weight:600}
   .app[data-ansicht="einsatz"][data-sheet="mitte"]{--sheet:56vh}
   .e-big{font-size:36px}
 }
+/* V20: Fahrt (Simulation oder GPS), Neuberechnung, Hindernismeldungen, mehrere Fahrzeuge */
+.fa{border:2px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:var(--panel)}
+.fa-k{display:flex;align-items:center;justify-content:space-between;gap:8px;font:700 14px var(--f-body);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.fa-rest{font:700 26px/1.1 var(--f-display)}
+.fa-rest small{font:600 15px var(--f-body);color:var(--muted)}
+.fa-neu{border-left:6px solid var(--brand-line);background:var(--sel-bg);color:var(--sel-ink);padding:8px 12px;border-radius:4px;font-weight:700}
+.fa-fehl{border-left:6px solid var(--bad);background:var(--bad-bg);padding:8px 12px;border-radius:4px;font-weight:600}
+.fa-k2{border-left:6px solid var(--warn);background:var(--warn-bg);padding:6px 10px;border-radius:4px;font-size:15px}
+.fa-ms{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fa-ms .btn{white-space:normal;line-height:1.2}
+#p-einsatz .btn.fa-hm{border-color:var(--warn);font-weight:700}
+.fzmk{--k:var(--ink);width:30px;height:30px;position:relative;display:grid;place-items:center;cursor:default}
+.fzmk b{position:relative;z-index:1;width:26px;height:26px;border-radius:50%;background:var(--k);color:var(--halo);font:800 14px/22px var(--f-display);text-align:center;border:2px solid var(--halo);box-shadow:0 0 0 1.5px var(--ink),0 1px 4px rgba(0,0,0,.45)}
+.fa .e-row>.btn{flex:1 1 0;min-width:0;white-space:normal;line-height:1.2}
+.fzmk i{position:absolute;inset:-9px;border-radius:50%;background:conic-gradient(from -22deg,var(--k) 0 44deg,transparent 44deg);-webkit-mask:radial-gradient(circle,transparent 13px,#000 14px);mask:radial-gradient(circle,transparent 13px,#000 14px)}
+.fzmk.eigen b{width:32px;height:32px;line-height:28px;font-size:16px}
+.fzmk.eigen i{inset:-12px}
+.mz{border:1px solid var(--line);border-left:6px solid var(--warn);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;background:var(--panel)}
+.mz.ok{border-left-color:var(--bad)}
+.mz span{font-size:13px;color:var(--muted)}
+.konfl{display:flex;flex-direction:column;gap:6px}
 </style>
 
 </head><body>
@@ -492,6 +513,9 @@ ol.steps li.jetzt{font-weight:600}
       </details>
       <details class="more"><summary>Einsatzsimulation und Wachen</summary>
       <p>Oben lässt sich zwischen «Zentrale» und «Fahrzeug» umstellen. Die Zentrale nimmt im Tab «Einsatz» einen simulierten Notruf entgegen oder setzt den Einsatzort selbst, sieht die Routen für A–D und sendet einem Fahrzeug den Auftrag: die validierte Route und, falls es eine gibt, die Alternative mit ungeklärten Stellen. Gibt es keine validierte Route, sendet die Zentrale nach einer Rückfrage bewusst nur die Vergleichsroute. Vor dem Quittieren wählt der Fahrer eine davon (validiert ist vorgewählt), danach sieht er nur noch diese Route, das Ziel und einen Knopf für den nächsten Status (quittiert, vor Ort, abgeschlossen). Die Zentrale sieht Wahl und Status.</p>
+      <p><b>Fahrt und Neuberechnung:</b> Nach dem Quittieren lässt sich die Fahrt simulieren oder mit dem GPS des Geräts verfolgen. Weicht das Fahrzeug von der Route ab (zwei Positionen nacheinander mehr als 35 m daneben), rechnet GreenRoute ohne Eingabe neu: ab dem Standort und in Fahrtrichtung, gewendet wird nur, wenn es anders nicht geht. Dabei bleibt die gewählte Routenart (validiert oder Alternative); gibt es sie ab dem Standort nicht mehr, sagt das Fahrzeug es ausdrücklich. Ungeklärte Stellen und Kurvenhinweise hinter dem Fahrzeug verschwinden. Die Zentrale sieht Standort, Restroute und jede Neuberechnung.</p>
+      <p><b>Hindernis melden:</b> Mit zwei Tipps meldet die Besatzung «Strasse gesperrt» (gilt für alle) oder «zu eng oder zu tief» (gilt für die eigene und alle grösseren Klassen). Das eigene Fahrzeug meidet den Abschnitt sofort. Für andere Fahrzeuge gilt die Meldung erst, wenn die Zentrale sie bestätigt; dann rechnen betroffene Fahrzeuge selbst neu. Bestätigte Meldungen gelten im Prototyp höchstens 24 Stunden und lassen sich aufheben.</p>
+      <p><b>Mehrere Fahrzeuge:</b> Sind mehrere Fahrzeuge unterwegs, weist GreenRoute nach Modellfahrzeit darauf hin, wenn sie dieselbe Zufahrt anfahren, sich in einer Engstelle begegnen (Fahrbahn schmaler als beide Fahrzeuge plus 0.5 m) oder etwa gleichzeitig aus verschiedenen Richtungen an dieselbe Kreuzung kommen. Das ist nur ein Hinweis; die Routenwahl ändert sich dadurch nicht. Diese Funktionen setzen Hinweise aus einer Rückmeldung von Schutz und Rettung Bern (November 2026) um.</p>
       <p>«Senden» heisst im Prototyp: im Browser speichern. Ein zweites Fenster im selben Browser erhält den Auftrag sofort, ein anderes Gerät nicht. Auf breiten Bildschirmen zeigt «Beides» Zentrale und Fahrzeug nebeneinander, etwa für eine Präsentation mit dem Beamer. Alles ist simuliert: Notrufe, Stichworte und Einsatznummern sind erfunden, es gibt keine Personendaten und keine echte Leitstelle.</p>
       <p><b>Wachen:</b> Berufsfeuerwehr Bern, Murtenstrasse 98 (Stützpunkt Forsthaus West, seit Dezember 2014), und Rettungsdienst Bern, Murtenstrasse 111 (beide Schutz und Rettung Bern, Adressen laut Stadt Bern). Koordinaten: amtlicher Adresspunkt (Gebäudeadressverzeichnis, abgefragt 10.11.2026); die Route beginnt an der nächsten Strasse. Der Start gilt in der Simulation für alle Fahrzeuge gleich und ist frei wählbar. Er sagt nichts darüber, wo welche Fahrzeuge tatsächlich stationiert sind. Die frühere Hauptwache Viktoriastrasse 70 ist kein Startpunkt mehr; die QGIS-Prüfung rechnet weiter ab dort.</p>
       </details>
@@ -524,10 +548,13 @@ ol.steps li.jetzt{font-weight:600}
         <li>Kirchenfeldbrücke: Laut Tiefbau gibt es eine Nutzungsvereinbarung für Notfalldienste. Ihr Inhalt ist offen, GreenRoute sperrt die Brücke deshalb weiter für C und D.</li>
         <li>Durchfahrten unter Gebäuden auf Hof- und Garagenzufahrten: Höhe meist unbekannt, bleibt ungeklärt.</li>
         <li>Baustellen verlängern die Fahrzeit (×1.5, bei bekannter enger Restbreite ×2), sperren aber nie. Die Sperrung der Aarstrasse ist so nicht abgebildet. Die Stadt gibt keine Restbreite an. QGIS rechnet mit derselben Regel, aber mit der zuletzt abgerufenen Datei, nicht live.</li>
-        <li>Demo-Sperrungen (Tab «Strasse») gelten nur in diesem Fenster. Sie sind nicht in QGIS und werden nicht an andere Fenster oder Fahrzeuge übertragen.</li>
+        <li>Demo-Sperrungen (Tab «Strasse») gelten nur in diesem Fenster. Sie sind nicht in QGIS und werden nicht an andere Fenster oder Fahrzeuge übertragen (anders als bestätigte Meldungen aus Fahrzeugen).</li>
         <li>Signale, Kandelaber, falsch parkierte Autos und Schnee fehlen in den Daten.</li>
         <li>Kurven und Abbiegen sind ein Modell (Schleppkurven), keine Fahrversuche.</li>
         <li>Fahrzeiten sind Modellzeiten ohne Verkehr.</li>
+        <li>Fahrt, Positionen und Meldungen laufen nur über den Speicher dieses Browsers (zweites Fenster, eingebettetes Tablet), nicht zwischen Geräten. Mit GPS hängt die Genauigkeit vom Gerät ab; ungenaue Positionen (über ±40 m) lösen keine Neuberechnung aus.</li>
+        <li>Meldungen aus Fahrzeugen und ihre Bestätigung wirken nur zur Laufzeit, nicht in QGIS und nicht im Netzmaster. Ob eine Meldung stimmt, prüft die Zentrale, nicht GreenRoute.</li>
+        <li>Hinweise zu mehreren Fahrzeugen beruhen auf Modellfahrzeiten ohne Verkehr und Sondersignal. Lichtsignale und aktuelle Verkehrslage sind nicht berücksichtigt.</li>
       </ul>
       </details>
       <details class="more"><summary>Forschungsprojekt und Technik</summary>
@@ -564,7 +591,7 @@ ol.steps li.jetzt{font-weight:600}
 
   <aside class="fzspalte" id="fzspalte" hidden aria-label="Fahrzeugansicht (Präsentation)">
     <div class="fz-kopf"><b>Fahrzeug</b><span>simuliertes Tablet im Einsatzfahrzeug</span></div>
-    <iframe id="fz-frame" title="Fahrzeugansicht"></iframe>
+    <iframe id="fz-frame" title="Fahrzeugansicht" allow="geolocation"></iframe>
   </aside>
 </div>
 
@@ -655,30 +682,49 @@ async function start(){
   baueKarte();
 }
 
-// Demo-Sperrung (V10): Abschnitt f in allen Modi und Klassen (auch REF) auf Kosten 0 setzen bzw. zuruecksetzen.
-// Nur Laufzeit, nur dieses Fenster; netz.json und Router bleiben unveraendert. Gleiche Funktion im Hauptthread und im Worker.
-function demoSP(D,f,an,O){
-  if(an){if(!O.has(f))O.set(f,JSON.stringify(['V','E'].map(mm=>Object.keys(D.kosten[mm]).map(c=>[c,D.kosten[mm][c][f]]))));
-    for(const mm of ['V','E'])for(const c of Object.keys(D.kosten[mm]))D.kosten[mm][c][f]=0;}
-  else if(O.has(f)){JSON.parse(O.get(f)).forEach((l,j)=>l.forEach(([c,k])=>{D.kosten[['V','E'][j]][c][f]=k;}));O.delete(f);}
+// Laufzeit-Sperren (V10 Demo-Sperrung, V20 auch bestätigte Meldungen aus Fahrzeugen): Abschnitt f für die Klassen kl
+// (auch 'REF') in beiden Modi auf Kosten 0 setzen, für alle anderen Klassen die ursprünglichen Kosten; kl = [] hebt auf.
+// Nur Laufzeit, nur dieses Fenster; netz.json und Router bleiben unverändert. Gleiche Funktion im Hauptthread und im Worker.
+// O: ursprüngliche Kosten je Abschnitt (gleiches Format wie bisher, Baustellen-Faktoren werden darin nachgeführt).
+function sperrSetzen(D,f,kl,O){
+  if(kl.length&&!O.has(f))O.set(f,JSON.stringify(['V','E'].map(mm=>Object.keys(D.kosten[mm]).map(c=>[c,D.kosten[mm][c][f]]))));
+  if(!O.has(f))return;
+  JSON.parse(O.get(f)).forEach((l,j)=>l.forEach(([c,k])=>{D.kosten[['V','E'][j]][c][f]=kl.includes(c)?0:k;}));
+  if(!kl.length)O.delete(f);
 }
 const DEMO=new Map(),DEMO_ORIG=new Map();let demoMk=[],refZeig=false;
 function segMitte(f){const ids=D.segs[f][0][0],i=Math.floor((ids.length-1)/2),a=ids[i],b=ids[Math.min(i+1,ids.length-1)];
   return [(D.nodes[2*a]+D.nodes[2*b])/200,(D.nodes[2*a+1]+D.nodes[2*b+1])/200];}
 function demoUmschalten(f){
   const an=!DEMO.has(f),ni=D.attr_cols.indexOf('name');
-  demoSP(D,f,an,DEMO_ORIG);if(worker)worker.postMessage({typ:'sperre',f,an});
   if(an)DEMO.set(f,D.attr[f][ni]||'Strasse ohne Namen');else DEMO.delete(f);
+  sperrNeu([f]);
   toast(an?'Demo-Sperrung gesetzt: '+DEMO.get(f)+'. GreenRoute rechnet neu.':'Demo-Sperrung aufgehoben.');
   zeichneDemo();uiDemo();if(P1&&P2)rechne();
 }
+// V20: angewandte Sperren in diesem Fenster = Demo-Sperrungen ∪ bestätigte Meldungen (je Abschnitt die Vereinigung der Klassen)
+const SPERR_KL=new Map();
+function sperrSoll(f){const s=new Set();if(DEMO.has(f))['REF','A','B','C','D'].forEach(k=>s.add(k));
+  MELD.forEach(m=>{if(m.f===f&&meldGilt(m))m.kl.forEach(k=>s.add(k));});return [...s].sort();}
+// gibt [f, neu gesperrte Klassen] für jeden geänderten Abschnitt zurück
+function sperrNeu(fs){const neu=[];
+  for(const f of new Set(fs)){const soll=sperrSoll(f),ist=SPERR_KL.get(f)||[];if(soll.join()===ist.join())continue;
+    sperrSetzen(D,f,soll,DEMO_ORIG);if(worker&&worker.ok)worker.postMessage({typ:'sperrkl',f,kl:soll});
+    if(soll.length)SPERR_KL.set(f,soll);else SPERR_KL.delete(f);neu.push([f,soll.filter(k=>!ist.includes(k))]);}
+  return neu;}
 function zeichneDemo(){if(!map)return;demoMk.forEach(m=>m.remove());demoMk=[];
-  DEMO.forEach((name,f)=>{const el=document.createElement('div');el.className='demomk';el.textContent='⛔';el.title='Demo-Sperrung: '+name;
-    el.onclick=ev=>{ev.stopPropagation();zeigeSeg(f);};demoMk.push(new maplibregl.Marker({element:el}).setLngLat(rel2wgs(...segMitte(f))).addTo(map));});}
+  const mk=(f,txt,title,cls)=>{const el=document.createElement('div');el.className='demomk'+(cls?' '+cls:'');el.textContent=txt;el.title=title;
+    el.onclick=ev=>{ev.stopPropagation();if(ansicht==='einsatz')toast(title,5000);else zeigeSeg(f);};demoMk.push(new maplibregl.Marker({element:el}).setLngLat(rel2wgs(...segMitte(f))).addTo(map));};
+  DEMO.forEach((name,f)=>mk(f,'⛔','Demo-Sperrung: '+name));
+  // V20: bestätigte Meldungen (für alle sichtbar) und offene (nur Zentrale und das meldende Fahrzeug)
+  const zeig=new Set();
+  MELD.forEach(m=>{if(DEMO.has(m.f)||zeig.has(m.f))return;
+    if(meldGilt(m)){zeig.add(m.f);mk(m.f,'⛔',`${m.name}: gesperrt nach Meldung von Fahrzeug ${m.c}, von der Zentrale bestätigt (${meldFuer(m)})`);}
+    else if(m.status==='offen'&&(ansicht==='gis'||(ansicht==='einsatz'&&profil===m.c))){zeig.add(m.f);mk(m.f,'⚠',`${m.name}: Meldung von Fahrzeug ${m.c}, Prüfung durch die Zentrale offen`);}});}
 function uiDemo(){const el=$('#demo');if(!el)return;if(!DEMO.size){el.hidden=true;el.innerHTML='';return;}
   el.hidden=false;
   el.innerHTML=`<b>Demo-Sperrung aktiv (${DEMO.size})</b><p class="small" style="margin:4px 0">${[...DEMO.values()].map(esc).join(', ')} – für alle Fahrzeuge und das Auto gesperrt. Nur in diesem Fenster, nicht in QGIS; andere Fenster und Fahrzeuge rechnen ohne diese Sperrung.</p><button class="btn" id="b-demo-alle">Alle Demo-Sperrungen aufheben</button>`;
-  el.querySelector('#b-demo-alle').onclick=()=>{[...DEMO.keys()].forEach(f=>{demoSP(D,f,false,DEMO_ORIG);if(worker)worker.postMessage({typ:'sperre',f,an:false});});DEMO.clear();zeichneDemo();uiDemo();segNeu();toast('Alle Demo-Sperrungen aufgehoben.');if(P1&&P2)rechne();};}
+  el.querySelector('#b-demo-alle').onclick=()=>{const fs=[...DEMO.keys()];DEMO.clear();sperrNeu(fs);zeichneDemo();uiDemo();segNeu();toast('Alle Demo-Sperrungen aufgehoben.');if(P1&&P2)rechne();};}
 // V12: Tab «Strasse» nach jeder Änderung der Demo-Sperren neu zeichnen (vorher blieb «gesperrt» stehen und der Knopf sperrte erneut)
 let segAkt=null;
 function segNeu(){if(segAkt!=null&&$('#seg-body').querySelector('#b-demo'))zeigeSeg(segAkt,true);}
@@ -781,17 +827,19 @@ async function startWorker(txt){
   try{
     const rs=document.getElementById('router-src');
     const src=rs?rs.textContent:await (await fetch('bors_router.js')).text();
-    const glue=`let R=null,DW=null;const VB=${VERBIETEN.toString()};const ORIG=new Map(),SP=${demoSP.toString()};const BAU_K=${JSON.stringify(BAU_K)};${bauFaktor.toString()};${bauAnwenden.toString()};
+    const glue=`let R=null,DW=null;const VB=${VERBIETEN.toString()};const ORIG=new Map(),SS=${sperrSetzen.toString()};const RI=${RICHT.toString()};const TP=${TMP.toString()};const BAU_K=${JSON.stringify(BAU_K)};${bauFaktor.toString()};${bauAnwenden.toString()};
       onmessage=e=>{const m=e.data;if(m.typ==='init'){DW=JSON.parse(m.txt);R=new BORS.Router(new BORS.Netz(DW));postMessage({typ:'bereit'});}
-      else if(m.typ==='sperre'){SP(DW,m.f,m.an,ORIG);}
+      else if(m.typ==='sperrkl'){SS(DW,m.f,m.kl,ORIG);}
       else if(m.typ==='bau'){bauAnwenden(DW,new Map(m.alt),new Map(m.neu),ORIG);}
       else if(m.typ==='snap'){postMessage({typ:'snap',id:m.id,p:R.snap(m.p,m.d)});}
-      else if(m.typ==='route'){const zu=m.verbot?VB(R,m.verbot):null;try{const r={V:R.berechne(m.p1,m.p2,'VALIDIERT'),E:R.berechne(m.p1,m.p2,'EXPERIMENTELL')};postMessage({typ:'res',id:m.id,res:r});}catch(err){postMessage({typ:'err',id:m.id,msg:String(err)});}finally{if(zu)zu();}}};`;
+      else if(m.typ==='route'){const zu=m.verbot?VB(R,m.verbot):null,zr=m.h?RI(R,m.h,m.p1):null,zt=m.tmp&&m.tmp.length?TP(DW,m.tmp):null;try{const r={V:R.berechne(m.p1,m.p2,'VALIDIERT'),E:R.berechne(m.p1,m.p2,'EXPERIMENTELL')};postMessage({typ:'res',id:m.id,res:r});}catch(err){postMessage({typ:'err',id:m.id,msg:String(err)});}finally{if(zt)zt();if(zr)zr();if(zu)zu();}}};`;
     worker=new Worker(URL.createObjectURL(new Blob([src+'\n'+glue],{type:'text/javascript'})));
     worker.onmessage=e=>{const m=e.data;if(m.typ==='snap'){const f=snapWarte.get(m.id);snapWarte.delete(m.id);if(f)f(m.p);return;}
       if(m.typ==='res'&&routeWarte.has(m.id)){const f=routeWarte.get(m.id);routeWarte.delete(m.id);f(m.res);return;}if(m.typ==='bereit'){worker.ok=true;
         // V14: Baustellen-Stand, der vor dem Start des Workers übernommen wurde, nachreichen (Worker startet mit dem Stand aus netz.json)
-        if(BAU_STATISCH&&BAU_AKT){const st=bauMinRb(BAU_STATISCH);if(st.size!==BAU_AKT.size||[...BAU_AKT].some(([f,rb])=>!st.has(f)||st.get(f)!==rb))worker.postMessage({typ:'bau',alt:[...st],neu:[...BAU_AKT]});}}else if(m.typ==='res'&&m.id===rid)fertig(m.res);else if(m.typ==='err'){rechnet=false;toast('Fehler im Router: '+m.msg);}};
+        if(BAU_STATISCH&&BAU_AKT){const st=bauMinRb(BAU_STATISCH);if(st.size!==BAU_AKT.size||[...BAU_AKT].some(([f,rb])=>!st.has(f)||st.get(f)!==rb))worker.postMessage({typ:'bau',alt:[...st],neu:[...BAU_AKT]});}
+        // V20: Sperren (Demo, bestätigte Meldungen), die vor dem Start des Workers gesetzt wurden, nachreichen
+        SPERR_KL.forEach((kl,f)=>worker.postMessage({typ:'sperrkl',f,kl}));}else if(m.typ==='res'&&m.id===rid)fertig(m.res);else if(m.typ==='err'){rechnet=false;toast('Fehler im Router: '+m.msg);}};
     worker.onerror=()=>{worker=null;};
     worker.postMessage({typ:'init',txt});
   }catch(e){worker=null;}
@@ -801,11 +849,28 @@ const snapWarte=new Map(),routeWarte=new Map();let snapId=0;
 // V15: eine Abbiegung (Klasse c, von a nach b am Ende von a bei pi/pos) für eine Rechnung verbieten; gibt eine Rückstell-Funktion zurück
 const VERBIETEN=(R,v)=>{const N=R.N,F=N.feat[v.a],cum=F.cum[v.pi];let u=-1;for(let i=0;i<cum.length;i++)if(Math.abs(cum[i]-v.pos)<1e-6){u=F.ids[v.pi][i];break;}
   if(u<0||!N.abb[v.c])return null;const t=N.abb[v.c].turn,k=(u*32768+v.a)*32768+v.b,alt=t.get(k);t.set(k,1e7);return ()=>{if(alt===undefined)t.delete(k);else t.set(k,alt);};};
-async function routeFuer(s,z,verbot){const p1=[s[0]-X0,s[1]-Y0],p2=[z[0]-X0,z[1]-Y0];
+// V20: Fahrtrichtung beim Neuberechnen. Für diese eine Rechnung bindet der Start auf der Strasse, auf der das Fahrzeug fährt
+// (Anschluss höchstens 40 m vom Standort), nur in Fahrtrichtung an: kein Wenden. Quer liegende Strassen (|cos| < 0.5) bleiben
+// in beiden Richtungen offen; gibt es in Fahrtrichtung keinen Anschluss (Einbahn), bleibt alles wie gehabt. Router unverändert.
+// p = Standort relativ zu x0/y0, h = Fahrtrichtung (Einheitsvektor Ost/Nord). Gibt eine Rückstell-Funktion zurück.
+function RICHT(R,h,p){const N=R.N;
+  N._anbindung=function(f,sn,start){const r=Object.getPrototypeOf(this)._anbindung.call(this,f,sn,start);
+    if(!start||r.length<2||Math.hypot(sn[4]-p[0],sn[5]-p[1])>40)return r;
+    const ids=this.feat[f].ids[sn[1]],a=ids[sn[2]],b=ids[sn[2]+1],dx=this.x[b]-this.x[a],dy=this.y[b]-this.y[a],l=Math.hypot(dx,dy);
+    if(!l)return r;const cos=(dx*h[0]+dy*h[1])/l;if(Math.abs(cos)<0.5)return r;
+    const w=r.filter(e=>e[0]===(cos>0?b:a));return w.length?w:r;};
+  return ()=>{delete N._anbindung;};}
+// V20: Sperren nur für eine Rechnung (eigene, noch nicht bestätigte Meldung eines Fahrzeugs): tmp = [[f, Klassen]]
+function TMP(D,tmp){const sav=[];
+  for(const [f,kl] of tmp)for(const mm of ['V','E'])for(const c of kl)if(D.kosten[mm][c]){sav.push([mm,c,f,D.kosten[mm][c][f]]);D.kosten[mm][c][f]=0;}
+  return ()=>{for(let i=sav.length-1;i>=0;i--){const [mm,c,f,k]=sav[i];D.kosten[mm][c][f]=k;}};}
+// o (V20, optional): {h: Fahrtrichtung, tmp: Sperren nur für diese Rechnung}
+async function routeFuer(s,z,verbot,o){const p1=[s[0]-X0,s[1]-Y0],p2=[z[0]-X0,z[1]-Y0],h=o&&o.h||null,tmp=o&&o.tmp&&o.tmp.length?o.tmp:null;
   // beim Seitenstart auf den Worker warten, statt einen zweiten Router im Hauptthread aufzubauen
   for(let k=0;k<300&&worker&&!worker.ok;k++)await new Promise(r=>setTimeout(r,100));
-  if(worker&&worker.ok)return new Promise(res=>{const id='a'+(++snapId);routeWarte.set(id,res);worker.postMessage({typ:'route',id,p1,p2,verbot:verbot||null});});
-  const R=await routerLokal(),zu=verbot?VERBIETEN(R,verbot):null;try{return {V:R.berechne(p1,p2,'VALIDIERT'),E:R.berechne(p1,p2,'EXPERIMENTELL')};}finally{if(zu)zu();}}
+  if(worker&&worker.ok)return new Promise(res=>{const id='a'+(++snapId);routeWarte.set(id,res);worker.postMessage({typ:'route',id,p1,p2,verbot:verbot||null,h,tmp});});
+  const R=await routerLokal(),zu=verbot?VERBIETEN(R,verbot):null,zr=h?RICHT(R,h,p1):null,zt=tmp?TMP(D,tmp):null;
+  try{return {V:R.berechne(p1,p2,'VALIDIERT'),E:R.berechne(p1,p2,'EXPERIMENTELL')};}finally{if(zt)zt();if(zr)zr();if(zu)zu();}}
 async function snap(E,N){const p=[E-X0,N-Y0];let r;
   if(worker&&worker.ok)r=await new Promise(res=>{const id=++snapId;snapWarte.set(id,res);worker.postMessage({typ:'snap',id,p,d:150});});
   else r=(await routerLokal()).snap(p,150);
@@ -876,6 +941,9 @@ function baueKarte(){
     map.addLayer({id:'bau',type:'line',source:'bau',layout:{visibility:'none'},paint:{'line-color':'#f08c00','line-width':['interpolate',['linear'],['zoom'],10,3,17,10],'line-dasharray':[1,1]}});
     map.addSource('punkte',{type:'geojson',data:punktGeo()});
     map.addLayer({id:'punkte',type:'circle',source:'punkte',layout:{visibility:'none'},paint:{'circle-radius':['interpolate',['linear'],['zoom'],11,2.5,17,6],'circle-color':['case',['==',['get','fest'],1],css('--bad'),css('--warn')],'circle-stroke-color':css('--halo'),'circle-stroke-width':1.2}});
+    // V20: Restrouten der Fahrzeuge unterwegs (Zentrale), unter den übrigen Routen
+    map.addSource('fz-rest',{type:'geojson',data:leer});
+    map.addLayer({id:'fz-rest',type:'line',source:'fz-rest',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':['get','col'],'line-width':3.5,'line-opacity':0.8,'line-dasharray':[2,1.4]}});
     map.addSource('route-unval',{type:'geojson',data:leer});
     map.addSource('route',{type:'geojson',data:leer});
     map.addLayer({id:'route-casing',type:'line',source:'route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':css('--halo'),'line-width':['+',['get','w'],4]}});
@@ -904,7 +972,7 @@ function baueKarte(){
       $('#basis-note').textContent='swisstopo-Kacheln sind hier nicht erreichbar (diese Vorschauseite erlaubt keine externen Kartenbilder). Ersatz: Gebäude, Wald und Gewässer aus der amtlichen Vermessung.';}}});
   map.on('click',klick);
   map.on('mousemove','netz',()=>{if(klickModus==='seg')map.getCanvas().style.cursor='pointer';});
-  map.on('dragstart',()=>{if(istMobil()&&$('.app').dataset.sheet!=='klein')setSheet('klein');});
+  map.on('dragstart',()=>{if(istMobil()&&$('.app').dataset.sheet!=='klein')setSheet('klein');if(FAHRT&&FAHRT.folgen){FAHRT.folgen=false;faUI();}});
   map.on('mouseleave','netz',()=>{map.getCanvas().style.cursor='';});
 }
 function netzFarbe(){return ['match',['get',profil],0,css('--ok'),1,css('--warn'),css('--bad')];}
@@ -969,7 +1037,7 @@ profNm();
 $('#prof-bar').onclick=e=>{const b=e.target.closest('button[data-p]');if(!b)return;setProfil(b.dataset.p);
   toast('Karte zeigt das Strassennetz für '+profil+' · '+PN[profil]+'. Nur die Farbe, kein Auftrag.',2600);};
 // Eine Klasse für Netzfarbe, Routenvergleich und Einsatzansicht
-function setProfil(c){profil=c;
+function setProfil(c){if(FAHRT&&FAHRT.c!==c)faStop(true);profil=c;
   document.querySelectorAll('#prof-bar button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.p===profil));profNm();
   if(map&&map.getLayer('netz'))map.setPaintProperty('netz','line-color',netzFarbe());
   if(map&&map.getLayer('netz')&&((BEIDE&&vglAktiv())||ansicht==='einsatz')){zeichnePunkte();zeichneRoute();einpassen();}
@@ -1044,7 +1112,9 @@ function pinEl(t,farbe){const d=document.createElement('div');d.className='pin';
 function zeichnePunkte(){
   // Fahrzeug mit Auftrag: eigene, feste Marken für Start und Einsatzort; die der Zentrale ausblenden
   const fz=fzAuftrag();
-  for(const [k,P,t,f] of [['s',fz&&fz.a.s,'Start','#16201e'],['z',fz&&fz.a.z,'Einsatzort',css('--accent')]]){
+  // V20: während der Fahrt zeigt der Fahrzeug-Marker den Standort, die Startmarke würde ihn verdecken
+  const fahrt=fz&&FAHRT&&FAHRT.aid===fz.a.id;
+  for(const [k,P,t,f] of [['s',fz&&!fahrt&&fz.a.s,'Start','#16201e'],['z',fz&&fz.a.z,'Einsatzort',css('--accent')]]){
     if(!P){if(mkF[k]){mkF[k].remove();mkF[k]=null;}continue;}
     if(!mkF[k])mkF[k]=new maplibregl.Marker({element:pinEl(t,f),anchor:'bottom'});
     mkF[k].setLngLat(lv2wgs(...P)).addTo(map);}
@@ -1081,6 +1151,8 @@ function einpassen(){
   if(!map)return;
   const b=new maplibregl.LngLatBounds();let n=0;const add=r=>r.rows.forEach(x=>x.pts.forEach(p=>{b.extend(rel2wgs(p[0],p[1]));n++;}));
   const fz=fzAuftrag();
+  // V20: während der Fahrt folgt die Karte dem Fahrzeug
+  if(fz&&FAHRT&&FAHRT.aid===fz.a.id&&FAHRT.folgen&&FAHRT.p)return;
   // Fahrzeug mit Auftrag: nur die zugewiesene Route; sonst wie bisher
   if(fz){if(fz.r)for(const k of fzWaehlt(fz)?['val','exp']:[fz.wahl])if(fz.r[k])add(fz.r[k]);b.extend(lv2wgs(...fz.a.s));b.extend(lv2wgs(...fz.a.z));n++;}
   else{if(!BEIDE||(ansicht==='einsatz'&&!vglAktiv()))return;
@@ -1099,12 +1171,15 @@ function zeichneRoute(){
   const engMarken=eng=>eng.forEach((g,i)=>{const el=document.createElement('div');el.className='engmk';el.textContent=i+1;el.title=`${g.name}: ${[...g.gr].join('; ')}`;
     el.onclick=ev=>{ev.stopPropagation();toast(`${i+1} · ${g.name} · ${Math.round(g.L)} m ungeklärt: ${[...g.gr].join('; ')}`,6000);};
     engMk.push(new maplibregl.Marker({element:el}).setLngLat(rel2wgs(...g.mitte)).addTo(map));});
+  const RZ=[];   // V20: Restrouten der Fahrzeuge unterwegs (Zentrale)
   if(fz){
     // Fahrzeug: grün = validiert, blau mit gelben Stellen = Alternative. Vor dem Quittieren beide (gewählte breiter), danach nur die gewählte
-    if(fz.r){const zw=fzWaehlt(fz);
+    // V20: während der Fahrt nur der Rest der Route vor dem Fahrzeug; eine simulierte Abweichung grau gestrichelt
+    if(fz.r){const zw=fzWaehlt(fz),FA_=FAHRT&&FAHRT.aid===fz.a.id&&!zw?FAHRT:null;
       for(const k of zw?['val','exp']:[fz.wahl]){const r=fz.r[k];if(!r)continue;const w=zw?(k===fz.wahl?8:4.5):8,o=zw?(k==='val'?-4:4):0;
-        r.rows.forEach(x=>{(k==='val'?VV:VE).push(linie(x,{w,o}));if(x.kat!==0)VU.push(linie(x,{w:Math.max(4,w-2),o}));});zuf(r);}
-      if(fz.v&&(zw||fz.wahl==='exp'))engMarken(fz.v.eng);}
+        (FA_?rRest(r,FA_.s):r.rows).forEach(x=>{(k==='val'?VV:VE).push(linie(x,{w,o}));if(x.kat!==0)VU.push(linie(x,{w:Math.max(4,w-2),o}));});if(!FA_)zuf(r);}
+      if(FA_&&FA_.ab)Z.push({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:FA_.ab.P.map(q=>rel2wgs(q[0],q[1]))}});
+      if(fz.v&&(zw||fz.wahl==='exp'))engMarken(engVor(fz));}
   }
   else if(BEIDE&&vglAktiv()){
     // nur die gewählte Klasse: validiert links, Vergleichsroute rechts versetzt (bei nur einer Route ohne Versatz)
@@ -1127,6 +1202,8 @@ function zeichneRoute(){
     zuf(r);
   }
   const fc=a=>({type:'FeatureCollection',features:a});
+  if(!fz&&ansicht==='gis')RZ.push(...restLinien());
+  if(map.getSource('fz-rest'))map.getSource('fz-rest').setData(fc(RZ));
   map.getSource('route').setData(fc(F));map.getSource('route-unval').setData(fc(U));map.getSource('zufahrt').setData(fc(Z));
   map.getSource('vgl-v').setData(fc(VV));map.getSource('vgl-e').setData(fc(VE));map.getSource('vgl-u').setData(fc(VU));
   const dimm=ansicht==='einsatz'?0.15:0.45;
@@ -1225,8 +1302,10 @@ const ZKEY='bors-auftraege';
 // Vor dem Quittieren sieht das Fahrzeug beide und wählt; danach nur noch die gewählte.
 const WAHL={val:'validierte Route',exp:'Alternative'};
 const fzR=z=>z&&z.r?z.r[z.wahl]:null;
-const fzWaehlt=z=>!!z&&!!z.r&&(z.status==='gesendet'||z.status==='empfangen')&&z.a.routen.length>1;
-const wahlTxt=z=>z.a.routen.length<2?(z.a.routen[0]==='val'?'validierte Route':'nur Vergleichsroute'):((z.status==='gesendet'||z.status==='empfangen')?'vorgewählt: ':'gewählt: ')+WAHL[z.wahl];
+// V20: Nach einer Neuberechnung im Fahrzeug gelten die Routenarten der neuen Rechnung (z.fahrt), sonst die gesendeten
+const routenVon=z=>z.fahrt&&Array.isArray(z.fahrt.routen)&&z.fahrt.routen.length?z.fahrt.routen:z.a.routen;
+const fzWaehlt=z=>!!z&&!!z.r&&(z.status==='gesendet'||z.status==='empfangen')&&routenVon(z).length>1;
+const wahlTxt=z=>routenVon(z).length<2?(routenVon(z)[0]==='val'?'validierte Route':'nur Vergleichsroute'):((z.status==='gesendet'||z.status==='empfangen')?'vorgewählt: ':'gewählt: ')+WAHL[z.wahl];
 // Aufträge aus V6 (ein Feld typ) weiter lesen
 const norm=(a,w)=>{if(!a.routen){a.routen=[a.typ];a.sig={[a.typ]:a.sig};}return w&&a.routen.includes(w)?w:a.routen[0];};
 const rd=p=>[Math.round(p[0]*100)/100,Math.round(p[1]*100)/100];
@@ -1272,23 +1351,36 @@ function einsatzOrt(p,art){
 function notruf(){const art=ARTEN[Math.floor(Math.random()*(ARTEN.length-1))],p=zufallsPunkt();if(!p)return;
   einsatzOrt(p,art);toast('Notruf eingegangen: '+art.t,3000);}
 
-function speichern(){try{const o={};for(const c in ZUW)o[c]={a:ZUW[c].a,status:ZUW[c].status,wahl:ZUW[c].wahl};localStorage.setItem(ZKEY,JSON.stringify(o));}catch(_){}}
+// V20: tq = Zeitpunkt «quittiert» (Start der Fahrt, für die Modell-Ankunftszeiten); fahrt = letzte Neuberechnung im Fahrzeug
+function speichern(){try{const o={};for(const c in ZUW){const z=ZUW[c];o[c]={a:z.a,status:z.status,wahl:z.wahl};if(z.tq)o[c].tq=z.tq;if(z.fahrt)o[c].fahrt=z.fahrt;}localStorage.setItem(ZKEY,JSON.stringify(o));}catch(_){}}
 function laden(){let o={};try{o=JSON.parse(localStorage.getItem(ZKEY)||'{}')||{};}catch(_){}
   const vorher=ZUW;ZUW={};
   // V13: unvollständige oder fremde Einträge überspringen statt die Oberfläche anzuhalten
   const pt=p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite);
   const gut=n=>n&&typeof n==='object'&&n.a&&typeof n.a==='object'&&n.a.c&&pt(n.a.s)&&pt(n.a.z)&&(Array.isArray(n.a.routen)&&n.a.routen.length&&n.a.routen.every(k=>k==='val'||k==='exp')||n.a.typ==='val'||n.a.typ==='exp')
     &&typeof n.a.nr==='string'&&(WEITER[n.status]||ENDE.has(n.status));
-  for(const c of ['A','B','C','D']){const n=o&&typeof o==='object'?o[c]:null;if(!gut(n)||n.a.c!==c)continue;const alt=vorher[c],w=norm(n.a,n.wahl);
-    if(alt&&alt.a.id===n.a.id&&alt.a.t===n.a.t){alt.status=n.status;alt.wahl=w;ZUW[c]=alt;}
-    else ZUW[c]={a:n.a,status:n.status,wahl:w,r:null,v:null,pruef:null};}}
+  const fa=f=>f&&typeof f==='object'&&typeof f.t==='number'&&pt(f.s)&&Array.isArray(f.routen)&&f.routen.length&&f.routen.every(k=>k==='val'||k==='exp')&&f.sig&&typeof f.sig==='object'&&(f.h==null||pt(f.h))?f:null;
+  for(const c of ['A','B','C','D']){const n=o&&typeof o==='object'?o[c]:null;if(!gut(n)||n.a.c!==c)continue;const alt=vorher[c],w=norm(n.a,n.wahl),nf=fa(n.fahrt),tq=Number.isFinite(n.tq)?n.tq:null;
+    if(alt&&alt.a.id===n.a.id&&alt.a.t===n.a.t){alt.status=n.status;alt.wahl=w;alt.tq=tq;
+      // neue Route aus dem Fahrzeug: hier mit demselben Router nachrechnen
+      if((alt.fahrt&&alt.fahrt.t)!==(nf&&nf.t)){alt.fahrt=nf;if(!alt.rr){alt.r=null;alt.v=null;alt.pruef=null;}}
+      ZUW[c]=alt;}
+    else ZUW[c]={a:n.a,status:n.status,wahl:w,r:null,v:null,pruef:null,tq,fahrt:nf};}}
 // Route eines Auftrags, der aus einem anderen Fenster kommt: gleiche Punkte, gleicher Router, Kennung vergleichen
+// V20: nach einer Neuberechnung im Fahrzeug ab deren Standort und Fahrtrichtung, mit den eigenen offenen Meldungen des Fahrzeugs
 async function auftragRoute(z){if(z.r!==null||z.lade)return;z.lade=true;
-  const B=await routeFuer(z.a.s,z.a.z),v=vgl(z.a.c,B),r={val:null,exp:null};
-  for(const k of z.a.routen)r[k]=(k==='val'?v.val:v.exp)||null;
-  const da=z.a.routen.filter(k=>r[k]);
-  z.lade=false;z.v=v;z.r=da.length?r:false;
-  z.pruef=!da.length?'fehlt':(da.length<z.a.routen.length||da.some(k=>routeSig(r[k])!==z.a.sig[k]))?'abweichend':'ok';
+  const fa=z.fahrt,rt=routenVon(z),sg=fa?fa.sig:z.a.sig;
+  const B=await routeFuer(fa?fa.s:z.a.s,z.a.z,null,{h:fa?fa.h:null,tmp:tmpFuer(z)}),v=vgl(z.a.c,B),r={val:null,exp:null};
+  z.lade=false;
+  if(z.fahrt!==fa){auftragRoute(z);return;}   // inzwischen neu berechnet: mit dem neuen Stand rechnen
+  for(const k of rt)r[k]=(k==='val'?v.val:v.exp)||null;
+  const da=rt.filter(k=>r[k]);
+  z.v=v;z.r=da.length?r:false;
+  z.pruef=!da.length?'fehlt':(da.length<rt.length||da.some(k=>routeSig(r[k])!==sg[k]))?'abweichend':'ok';
+  // V20: Fahrzeug sieht seinen Auftrag erst nach einer bestätigten Sperre, die jünger ist als seine Route: selbst neu rechnen und
+  // die neue Route melden (statt nur «weicht ab»)
+  if(z.pruef!=='ok'&&ansicht==='einsatz'&&fzAuftrag()===z){const t0=z.fahrt?z.fahrt.t:z.a.t,m=MELD.find(x=>meldGilt(x)&&x.kl.includes(z.a.c)&&(x.tb||x.t)>t0);
+    if(m&&['gesendet','empfangen','quittiert'].includes(z.status)){neuRouten(z,'meldung',{p:fa?fa.s:z.a.s,h:fa?fa.h:null,name:m.name});return;}}
   if(fzAuftrag()===z&&map&&map.getLayer('netz')){zeichneRoute();einpassen();}uiRoute();}
 
 function zuweisen(c){
@@ -1306,12 +1398,12 @@ function zuweisen(c){
 function zurueck(c){const z=ZUW[c];if(!aktiv(z))return;
   // V13: Rückfrage, wenn das Fahrzeug schon unterwegs ist; der Auftrag bleibt als «zurückgezogen» gespeichert
   if((z.status==='quittiert'||z.status==='vor Ort')&&!confirm(`Fahrzeug ${c} ist ${z.status==='vor Ort'?'schon vor Ort':'schon unterwegs'} (Auftrag ${z.a.nr}). Auftrag wirklich zurückziehen?`))return;
-  z.status='zurückgezogen';speichern();uiRoute();toast(`Auftrag von Fahrzeug ${c} zurückgezogen.`,2500);}
+  z.status='zurückgezogen';speichern();posSchreiben(c,null);if(FAHRT&&FAHRT.aid===z.a.id)faStop(true);uiRoute();fzMarker();toast(`Auftrag von Fahrzeug ${c} zurückgezogen.`,2500);}
 
 function uiZentrale(){
   const el=$('#zen');if(!el||!D)return;
-  let h='';
-  if(!EINSATZ)h=`<h2>Einsatz simulieren</h2><p class="intro" style="margin-top:-8px">Simuliere einen Notruf und finde geeignete Routen für unterschiedliche Einsatzfahrzeuge.</p>
+  let h=meldBox();   // V20: Meldungen aus Fahrzeugen zuerst (Entscheid der Zentrale)
+  if(!EINSATZ)h+=`<h2>Einsatz simulieren</h2><p class="intro" style="margin-top:-8px">Simuliere einen Notruf und finde geeignete Routen für unterschiedliche Einsatzfahrzeuge.</p>
     <div class="row"><button class="btn prim zbig" id="z-notruf">Notruf simulieren</button><button class="btn zbig" id="z-ort">Einsatzort selbst wählen</button></div>
     ${breit.matches&&!splitAn()&&!EINGEBETTET?'<button class="btn" id="z-split">Präsentation: Zentrale und Fahrzeug nebeneinander</button>':''}
     <p class="small muted">Forschungsprototyp zur Simulation – nicht für reale Einsätze geeignet.</p>`;
@@ -1321,10 +1413,10 @@ function uiZentrale(){
     const fertig=!hierL.length&&KL.some(c=>ZUW[c]&&ZUW[c].a.nr===E.nr&&ZUW[c].status==='abgeschlossen');
     let nx='';
     if(hierL.length){const c=hierL[0],z=ZUW[c],w=WEITER[z.status];
-      nx=`<div class="next" aria-live="polite"><b class="k">Nächster Schritt</b><span>Auftrag an ${c} · ${PN[c]}: Status «${esc(z.status)}». ${w?`Weiter in der Fahrzeugansicht${splitAn()?' rechts im Tablet':''}: «${w[0]}».`:''}</span>${splitAn()?'':`<button class="btn prim" data-f="${c}">Zur Fahrzeugansicht ${c} wechseln</button>`}</div>`;}
+      nx=`<div class="next" aria-live="polite"><b class="k">Nächster Schritt</b><span>Auftrag an ${c} · ${PN[c]}: Status «${esc(z.status)}». ${w?`Weiter in der Fahrzeugansicht${splitAn()?' rechts im Tablet':''}: «${w[0]}».`:''}${z.status==='quittiert'?' Dort lässt sich die Fahrt simulieren: Abweichung, Neuberechnung, Hindernis melden.':''}</span>${splitAn()?'':`<button class="btn prim" data-f="${c}">Zur Fahrzeugansicht ${c} wechseln</button>`}</div>`;}
     else if(fertig)nx='<div class="next" aria-live="polite"><b class="k">Erledigt</b><span>Einsatz abgeschlossen. «Neuer Notruf» startet den nächsten.</span></div>';
     else if(BEIDE&&!rechnet)nx='<div class="next"><b class="k">Nächster Schritt</b><span>Startstandort oben prüfen, dann ein Fahrzeug wählen und «Senden». Buchstabe antippen = Routen dieser Klasse auf der Karte: <span class="pill ok">validiert</span> passt nach Daten, <span class="pill warn">Vergleich</span> nutzt ungeklärte Stellen.</span></div>';
-    h=`<div class="ez"><div class="ez-k"><span>Notruf ${esc(E.nr)} · ${esc(E.zeit)} Uhr</span><span class="pill ${E.art.p===1?'bad':'warn'}">Prio ${E.art.p}</span></div>
+    h+=`<div class="ez"><div class="ez-k"><span>Notruf ${esc(E.nr)} · ${esc(E.zeit)} Uhr</span><span class="pill ${E.art.p===1?'bad':'warn'}">Prio ${E.art.p}</span></div>
       <select id="z-art" aria-label="Stichwort">${ARTEN.map((x,i)=>`<option value="${i}" ${x===E.art?'selected':''}>${esc(x.t)}</option>`).join('')}</select>
       <div class="ez-ort">${esc((P2txt||'Einsatzort fehlt').replace(/^(Ziel|Einsatzort):\s*/,''))}</div>
       <label class="small muted" for="z-start" style="margin-bottom:-4px">Fahrzeuge starten bei</label>
@@ -1352,9 +1444,13 @@ function uiZentrale(){
           <div class="dz-b">${b}</div></div>`;}
       h+='<p class="small muted">«Beide Routen»: Die Crew wählt vor dem Quittieren. Zeiten = Modellfahrzeit ohne Verkehr. Gesperrte Abschnitte sind nie Teil einer Route. Details im Tab «Route».</p>';}
     h+='</div>';}
+  // V20: mehrere Fahrzeuge unterwegs: Hinweise nach Modellzeit (Kasten wird laufend nachgeführt)
+  h+='<div id="konfl" class="konfl"></div>';
   h+=`<div><h3 style="margin-bottom:6px">Fahrzeuge</h3><div class="fzl">${['A','B','C','D'].map(c=>{const z=ZUW[c];
-    return `<div><b style="color:var(--r${c})">${c}</b><span>${PN[c]}</span>${aktiv(z)?`<span class="st on">${esc(z.status)}</span><span class="muted">${esc(z.a.nr)} · ${esc(z.a.art)} · ${esc(wahlTxt(z))}</span><button class="btn" data-x="${c}">Zurückziehen</button>`:`<span class="st">frei</span>${z?`<span class="muted small">${esc(z.a.nr)} ${esc(z.status)}</span>`:''}`}</div>`;}).join('')}</div></div>`;
+    if(ansicht==='gis'&&aktiv(z)&&z.r===null)auftragRoute(z);   // V20: Zentrale rechnet die Routen aller Fahrzeuge nach (für Restroute und Hinweise)
+    return `<div><b style="color:var(--r${c})">${c}</b><span>${PN[c]}</span>${aktiv(z)?`<span class="st on">${esc(z.status)}</span><span class="muted">${esc(z.a.nr)} · ${esc(z.a.art)} · ${esc(wahlTxt(z))}</span><span class="small" data-fzr="${c}">${fzrTxt(c)}</span><button class="btn" data-x="${c}">Zurückziehen</button>`:`<span class="st">frei</span>${z?`<span class="muted small">${esc(z.a.nr)} ${esc(z.status)}</span>`:''}`}</div>`;}).join('')}</div></div>`;
   el.innerHTML=h;
+  konfliktUI();meldKnoepfe(el);
   const on=(s,f)=>{const x=el.querySelector(s);if(x)x.onclick=f;};
   on('#z-notruf',notruf);
   on('#z-ort',()=>{ortWahl='ort';hinweis();if(istMobil())setSheet('klein');});
@@ -1374,7 +1470,12 @@ function uiZentrale(){
 
 // Fahrzeug: nur der eigene Auftrag, ein grosser Knopf für den nächsten Status
 function fzWahl(k){const z=fzAuftrag();if(!fzWaehlt(z)||z.wahl===k||!z.r[k])return;z.wahl=k;speichern();zeichneRoute();uiRoute();}
-function fzWeiter(){const z=fzAuftrag();if(!z)return;const w=WEITER[z.status];if(!w)return;const mitWahl=fzWaehlt(z);z.status=w[1];speichern();
+function fzWeiter(){const z=fzAuftrag();if(!z)return;const w=WEITER[z.status];if(!w)return;const mitWahl=fzWaehlt(z);z.status=w[1];
+  // V20: Fahrt beginnt mit «quittiert»; vor Ort / abgeschlossen beendet sie
+  if(z.status==='quittiert')z.tq=Date.now();
+  else if(FAHRT&&FAHRT.aid===z.a.id)faStop();
+  if(z.status==='abgeschlossen')posSchreiben(z.a.c,null);
+  speichern();
   if(z.status!=='abgeschlossen')toast(`An die Zentrale gemeldet: ${z.status}${mitWahl?' mit '+WAHL[z.wahl]:''}`,2500);
   if(mitWahl){zeichneRoute();einpassen();}
   if(z.status==='abgeschlossen'){toast('Einsatz abgeschlossen. Fahrzeug wieder frei.',2500);
@@ -1384,13 +1485,16 @@ function fzWeiter(){const z=fzAuftrag();if(!z)return;const w=WEITER[z.status];if
     zeichnePunkte();zeichneRoute();}uiRoute();}
 function uiFahrzeug(){
   const el=$('#f-auftrag'),z=fzAuftrag(),c=profil;
+  if(FAHRT&&(!z||z.a.id!==FAHRT.aid||z.status!=='quittiert'))faStop(true);   // V20: Auftrag beendet oder zurückgezogen
   $('#e-selbst').hidden=!!z;
   if(ansicht!=='einsatz')return;
   if(!z){const l=ZUW[c];
     el.innerHTML=`<div class="e-card"><div class="e-lbl">Kein Auftrag</div><div class="e-sub">Fahrzeug ${c} · ${PN[c]} wartet auf eine Route der Zentrale.</div>${l?(l.status==='zurückgezogen'?`<div class="e-note" style="color:var(--ink);font-weight:600">⚠ Auftrag ${esc(l.a.nr)} wurde von der Zentrale zurückgezogen. Nicht mehr anfahren, Rückfrage bei der Zentrale.</div>`:`<div class="e-note">Letzter Auftrag ${esc(l.a.nr)} abgeschlossen.</div>`):''}<div class="e-note">Neue Aufträge erscheinen hier sofort, auch in einem zweiten Fenster dieses Browsers.</div></div>`;return;}
   if(z.status==='gesendet'){z.status='empfangen';speichern();}
   if(z.r===null)auftragRoute(z);
-  const a=z.a,R=z.r,r=fzR(z),val=z.wahl==='val',w=WEITER[z.status],zw=fzWaehlt(z),n=z.v?z.v.eng.length:0;
+  // V20: während der Fahrt nur noch die ungeklärten Stellen vor dem Fahrzeug
+  const vv=z.v?Object.assign({},z.v,{eng:engVor(z)}):null;
+  const a=z.a,R=z.r,r=fzR(z),val=z.wahl==='val',w=WEITER[z.status],zw=fzWaehlt(z),n=vv?vv.eng.length:0;
   const st=t=>`${t} Stelle${n===1?'':'n'}`;
   let h=`<div class="f-kopf"><span class="f-meta">Auftrag ${esc(a.nr)} · ${esc(a.zeit)} Uhr · Prio ${a.p}</span><div class="f-art">${esc(a.art)}</div><div class="f-ort">${esc(a.ort)}</div></div>`,eng='',nachKnopf='';
   if(R===null)h+='<div class="e-card"><div class="e-sub">Route wird geladen …</div></div>';
@@ -1403,23 +1507,360 @@ function uiFahrzeug(){
         <button class="e-card ok" data-w="val" aria-pressed="${val}"><span class="e-lbl">✔ Validiert</span><span class="e-big">${kv.fahrzeit_min.toFixed(1)} <small>min</small></span><span class="e-sub">${km(kv.laenge_m)}</span><span class="e-note">${kv.modus==='VALIDIERT_BIS_ZUFAHRT'?'passt nach Daten bis zur Zufahrt':'passt nach Daten'}</span></button>
         <button class="e-card warn" data-w="exp" aria-pressed="${!val}"><span class="e-lbl">⚠ Alternative</span><span class="e-big">${ke.fahrzeit_min.toFixed(1)} <small>min</small></span><span class="e-sub">${km(ke.laenge_m)}</span><span class="e-note">${n} ungeklärt</span></button></div>`;
       nachKnopf=`<div class="e-sub" style="font-weight:600">Alternative: ${Math.abs(dt)<0.05?'gleich schnell':`${Math.abs(dt).toFixed(1)} min ${dt<0?'kürzer':'länger'}`}, ${km(Math.abs(dl))} ${dl<0?'kürzer':'länger'}, nicht gesichert. Nur wenn die gelben Stellen passierbar sind.</div>`;}
-    else{const lbl=val?(r.modus==='VALIDIERT_BIS_ZUFAHRT'?'✔ Validiert bis Zufahrt':'✔ Validierte Route'):'⚠ '+(a.routen.length>1?'Alternative':'Vergleichsroute')+' · nicht gesichert';
-      h+=`<div class="e-card ${val?'ok':'warn'}"><div class="e-lbl">${lbl}</div><div class="e-big">${r.fahrzeit_min.toFixed(1)} <small>min</small></div><div class="e-sub">${km(r.laenge_m)}${val?'':` · ${st(n+' ungeklärte')}`}</div></div>`;}
+    else{const lbl=val?(r.modus==='VALIDIERT_BIS_ZUFAHRT'?'✔ Validiert bis Zufahrt':'✔ Validierte Route'):'⚠ '+(routenVon(z).length>1?'Alternative':'Vergleichsroute')+' · nicht gesichert';
+      // V20: während der Fahrt steht der Rest im Fahrt-Kasten; die Karte bleibt kurz (wichtig auf dem Handy)
+      h+=`<div class="e-card ${val?'ok':'warn'}"><div class="e-lbl">${lbl}</div>${FAHRT&&FAHRT.aid===a.id?'':`<div class="e-big">${r.fahrzeit_min.toFixed(1)} <small>min</small></div>`}<div class="e-sub">${km(r.laenge_m)}${val?'':` · ${st(n+' ungeklärte')}`}${z.fahrt?` · neu berechnet ${zeitTxt(z.fahrt.t)}`:''}</div></div>`;}
     h+=zufahrtTxt(r).map(t=>`<div class="e-note">${esc(t)}</div>`).join('')+
-      kurvenHinweis(r).map(t=>`<div class="e-note" style="color:var(--ink);font-weight:600">⚠ ${esc(t)}</div>`).join('')+
+      kurvenVor(z,r).map(t=>`<div class="e-note" style="color:var(--ink);font-weight:600">⚠ ${esc(t)}</div>`).join('')+
       (z.pruef==='abweichend'?'<div class="e-note" style="color:var(--bad);font-weight:600">Eine Route weicht von der Berechnung der Zentrale ab. Rückfrage.</div>':'');
-    if(!val&&n)eng=`<h3>Ungeklärte Stellen – vor Ort beurteilen</h3>${engListe(z.v,6)}`;}
+    if(z.status==='quittiert')h+='<div id="f-fahrt" aria-live="polite"></div>';
+    if(!val&&n)eng=`<h3>Ungeklärte Stellen${FAHRT&&FAHRT.aid===a.id?' vor dem Fahrzeug':''} – vor Ort beurteilen</h3>${engListe(vv,6)}`;}
   if(w&&R!==null)h+=`<button class="btn f-go" id="f-weiter">${zw?(val?'Mit validierter Route quittieren':'Mit Alternative quittieren'):w[0]}</button>`;
   h+=nachKnopf+eng;
   h+=`<div><span class="st on">Status: ${esc(z.status)}</span></div><div class="e-note">Start: ${esc(a.st)}. Modellfahrzeit ohne Verkehr.${val?'':' Ob gelbe Stellen passierbar sind, weiss GreenRoute nicht.'}</div>`;
   el.innerHTML=h;
   const b=$('#f-weiter');if(b)b.onclick=fzWeiter;
   el.querySelectorAll('[data-w]').forEach(x=>x.onclick=()=>fzWahl(x.dataset.w));
-  if(z.v)engKlick(el,z.v);}
+  if(vv)engKlick(el,vv);
+  faUI(true);}
+
+// ------------------------------------------------ V20: Fahrt, Neuberechnung, Hindernismeldungen, mehrere Fahrzeuge
+// Umsetzung der Rückmeldung aus der Praxis (Schutz und Rettung Bern, 19.11.2026):
+//  - Fahrt: Position aus dem GPS des Geräts oder simuliert entlang der Route. Weicht das Fahrzeug ab (zwei Positionen nacheinander
+//    mehr als 35 m neben der Route), rechnet GreenRoute ohne Eingabe neu: ab dem Standort und in Fahrtrichtung (Wenden nur, wenn es
+//    anders nicht geht). Ungeklärte Stellen und Kurvenhinweise hinter dem Fahrzeug verschwinden.
+//  - Hindernis melden (zwei Tipps): gilt sofort für das meldende Fahrzeug, für alle anderen erst nach Bestätigung durch die Zentrale.
+//  - Mehrere Fahrzeuge: Standorte und Restrouten in der Zentrale; Hinweise bei gleicher Zufahrt, Gegenverkehr in einer Engstelle und
+//    gleichzeitiger Ankunft an einer Kreuzung (nach Modellzeit, ändert die Routenwahl nicht).
+// Router und netz.json bleiben unverändert; alles wirkt nur zur Laufzeit (wie Demo-Sperrung und Baustellen).
+// Positionen und Meldungen laufen wie die Aufträge über den Speicher dieses Browsers (localStorage), nicht zwischen Geräten.
+const POS_KEY='bors-positionen',MELD_KEY='bors-meldungen';
+const FA={ABW_M:35,ABW_N:2,PAUSE_S:8,GPS_GENAU_M:40,ZIEL_M:30,TEMPI:[4,10,1],AB_MAX_M:220,AB_MIN_M:80,MELD_H:24,ENG_ABST_M:0.5,ETA_KREUZ_S:20,ETA_ENG_S:45};
+const GRUND={abweichung:'Abweichung',hindernis:'Hindernis gemeldet',meldung:'bestätigte Sperre'};
+let FAHRT=null,POS={},MELD=[],fzMk={},KXY=null,KNOT=null,pulsN=0;
+const zeitTxt=t=>{const d=new Date(t);return zwei(d.getHours())+':'+zwei(d.getMinutes());};
+const absP=p=>[p[0]+X0,p[1]+Y0];
+const segName=f=>D.attr[f][D.attr_cols.indexOf('name')]||'Strasse ohne Namen';
+
+// Geometrie einer Route (relativ): Punkte, Weg und Modellzeit kumuliert, Ende jeder Zeile (Weg re, Zeit rt). Zeit wie fahrzeit_min.
+function rGeo(r){if(r._g)return r._g;const si=D.attr_cols.indexOf('speed'),P=[],S=[],T=[],RI=[],re=[],rt=[];let s=0,t=0;
+  r.rows.forEach((x,k)=>{const v=Math.max(1,(D.attr[x.f][si]||30)/3.6);
+    x.pts.forEach((q,i)=>{if(P.length){const o=P[P.length-1],d=Math.hypot(q[0]-o[0],q[1]-o[1]);if(i===0&&d<0.01)return;s+=d;t+=d/v;}P.push(q);S.push(s);T.push(t);RI.push(k);});
+    t+=(x.oeffnen||0)*30;re.push(s);rt.push(t);});
+  Object.defineProperty(r,'_g',{value:{P,S,T,RI,L:s,Tg:t,re,rt},enumerable:false,configurable:true});return r._g;}
+// Projektion auf die Route; sHint: Stellen weit hinter dem bisherigen Stand nur, wenn sie deutlich näher liegen (Strasse zweimal befahren)
+function rProj(g,x,y,sHint){let b=null;
+  for(let i=1;i<g.P.length;i++){const [ax,ay]=g.P[i-1],[bx,by]=g.P[i],dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy,u=l2?Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/l2)):0;
+    const d=Math.hypot(x-ax-u*dx,y-ay-u*dy),s=g.S[i-1]+u*(g.S[i]-g.S[i-1]),m=d+(sHint!=null&&s<sHint-40?25:0);
+    if(!b||m<b.m)b={m,d,s,t:g.T[i-1]+u*(g.T[i]-g.T[i-1]),row:g.RI[i]};}
+  return b||{d:g.P.length?Math.hypot(x-g.P[0][0],y-g.P[0][1]):Infinity,s:0,t:0,row:0};}
+function polyPunkt(P,S,s){if(P.length<2)return {p:(P[0]||[0,0]).slice(),h:null,i:0};let i=1;while(i<P.length-1&&S[i]<s)i++;
+  const a=P[i-1],b=P[i],L=S[i]-S[i-1],u=L>0?Math.max(0,Math.min(1,(s-S[i-1])/L)):1,dx=b[0]-a[0],dy=b[1]-a[1],n=Math.hypot(dx,dy);
+  return {p:[a[0]+u*dx,a[1]+u*dy],h:n?[dx/n,dy/n]:null,i,u};}
+function rPunkt(g,s){const q=polyPunkt(g.P,g.S,s);q.row=g.RI[q.i]||0;q.t=q.i?g.T[q.i-1]+(q.u||0)*(g.T[q.i]-g.T[q.i-1]):0;return q;}
+// Zeilen ab s (Karte): befahrene weglassen, die laufende kürzen
+function rRest(r,s){if(s<=0.5)return r.rows;const g=rGeo(r),out=[];
+  r.rows.forEach((x,k)=>{const e=g.re[k],a=k?g.re[k-1]:0;if(e<=s)return;if(a>=s){out.push(x);return;}
+    const pts=[rPunkt(g,s).p];for(let i=0;i<g.P.length;i++)if(g.RI[i]===k&&g.S[i]>s)pts.push(g.P[i]);if(pts.length>1)out.push(Object.assign({},x,{pts}));});
+  return out;}
+
+// Positionen der Fahrzeuge (dieser Browser): {c: {p: LV95, h, t, aid, q: 'sim'|'gps'}}
+function posLaden(){try{const o=JSON.parse(localStorage.getItem(POS_KEY)||'{}');POS=o&&typeof o==='object'&&!Array.isArray(o)?o:{};}catch(_){POS={};}}
+function posSchreiben(c,e){posLaden();if(e)POS[c]=e;else delete POS[c];try{localStorage.setItem(POS_KEY,JSON.stringify(POS));}catch(_){}}
+const posAkt=(c,z)=>{const p=POS[c];return p&&z&&p.aid===z.a.id&&Array.isArray(p.p)&&p.p.length===2&&p.p.every(Number.isFinite)&&Date.now()-p.t<120000?p:null;};
+
+// Meldungen aus Fahrzeugen (dieser Browser). status: offen | bestaetigt | verworfen | aufgehoben
+function meldLaden(){let a=[];try{a=JSON.parse(localStorage.getItem(MELD_KEY)||'[]');}catch(_){}
+  MELD=Array.isArray(a)?a.filter(m=>m&&typeof m.id==='string'&&Number.isInteger(m.f)&&m.f>=0&&m.f<D.segs.length&&Array.isArray(m.kl)&&m.kl.length&&m.kl.every(k=>/^(REF|[ABCD])$/.test(k))
+    &&typeof m.t==='number'&&/^[ABCD]$/.test(m.c)&&typeof m.name==='string'&&['offen','bestaetigt','verworfen','aufgehoben'].includes(m.status)):[];}
+function meldSchreiben(){try{localStorage.setItem(MELD_KEY,JSON.stringify(MELD.slice(-60)));}catch(_){}}
+const meldGilt=m=>m.status==='bestaetigt'&&Date.now()-(m.tb||m.t)<FA.MELD_H*3600e3;
+const KL_AB=c=>['A','B','C','D'].slice(['A','B','C','D'].indexOf(c));
+const meldFuer=m=>m.kl.includes('REF')?'gesperrt für alle Fahrzeuge und Autos':'gesperrt für '+m.kl.join(', ');
+// eigene, (noch) nicht bestätigte Meldungen eines Fahrzeugs gelten für seine Routen in diesem Auftrag
+const tmpFuer=z=>MELD.filter(m=>m.aid===z.a.id&&(m.status==='offen'||m.status==='verworfen')).map(m=>[m.f,m.kl]);
+// bestätigte Meldungen als Sperren übernehmen; liegt ein neu gesperrter Abschnitt auf der Route des eigenen Fahrzeugs: neu rechnen
+function meldAnwenden(){const neu=sperrNeu([...new Set([...MELD.map(m=>m.f),...SPERR_KL.keys()])]);zeichneDemo();segNeu();
+  if(!neu.length)return;
+  if(P1&&P2&&!rechnet)rechne();
+  const z=ansicht==='einsatz'?fzAuftrag():null;
+  if(z&&z.r&&['gesendet','empfangen','quittiert'].includes(z.status)){const c=z.a.c;
+    const hit=neu.filter(([f,kl])=>kl.includes(c)&&['val','exp'].some(k=>z.r[k]&&z.r[k].rows.some(x=>x.f===f)));
+    if(hit.length){const F=FAHRT&&FAHRT.aid===z.a.id&&FAHRT.p?FAHRT:null;neuRouten(z,'meldung',{p:F?absP(F.p):null,h:F?F.h:null,name:segName(hit[0][0])});}}}
+function meldStatus(m,st){if(!m)return;meldLaden();const x=MELD.find(y=>y.id===m.id);if(!x)return;x.status=st;if(st==='bestaetigt')x.tb=Date.now();meldSchreiben();
+  meldAnwenden();uiRoute();
+  toast(st==='bestaetigt'?`${x.name}: ${meldFuer(x)}. ${x.kl.includes('REF')?'Alle Fahrzeuge rechnen':'Betroffene Fahrzeuge ('+x.kl.join(', ')+') rechnen'} ohne diesen Abschnitt.`:st==='verworfen'?`Meldung nicht übernommen. ${x.name} bleibt nur für ${x.c} gemieden.`:`${x.name}: Sperre aufgehoben.`,4500);}
+// Zentrale: offene Meldungen entscheiden, bestätigte aufheben
+function meldBox(){const off=MELD.filter(m=>m.status==='offen'),gilt=MELD.filter(meldGilt);if(!off.length&&!gilt.length)return '';
+  let h='<div style="display:flex;flex-direction:column;gap:8px"><h3>Meldungen aus Fahrzeugen</h3>';
+  for(const m of off)h+=`<div class="mz" role="group" aria-label="Meldung von ${m.c}"><b>⚠ ${m.c} · ${PN[m.c]}: ${esc(m.name)} – ${m.art==='gesperrt'?'Strasse gesperrt':'zu eng oder zu tief'}</b>
+    <span>${zeitTxt(m.t)} Uhr, Auftrag ${esc(m.nr||'')}. Gilt bisher nur für ${m.c}. «Bestätigen» sperrt den Abschnitt für ${m.art==='gesperrt'?'alle Fahrzeuge und Autos':m.kl.join(', ')}.</span>
+    <div class="row"><button class="btn prim" data-mb="${m.id}">Bestätigen</button><button class="btn" data-mv="${m.id}">Nicht übernehmen</button><button class="btn" data-mz="${m.id}">Zeigen</button></div></div>`;
+  for(const m of gilt)h+=`<div class="mz ok"><b>⛔ ${esc(m.name)}: ${meldFuer(m)}</b><span>Gemeldet von ${m.c} um ${zeitTxt(m.t)}, bestätigt um ${zeitTxt(m.tb||m.t)}. Gilt in allen Fenstern dieses Browsers, höchstens ${FA.MELD_H} Stunden.</span>
+    <div class="row"><button class="btn" data-ma="${m.id}">Aufheben</button><button class="btn" data-mz="${m.id}">Zeigen</button></div></div>`;
+  return h+'</div>';}
+function meldKnoepfe(el){const by=(b,k)=>MELD.find(x=>x.id===b.dataset[k]);
+  el.querySelectorAll('[data-mb]').forEach(b=>b.onclick=()=>meldStatus(by(b,'mb'),'bestaetigt'));
+  el.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>meldStatus(by(b,'mv'),'verworfen'));
+  el.querySelectorAll('[data-ma]').forEach(b=>b.onclick=()=>meldStatus(by(b,'ma'),'aufgehoben'));
+  el.querySelectorAll('[data-mz]').forEach(b=>b.onclick=()=>{const m=by(b,'mz');if(m&&map){map.easeTo({center:rel2wgs(...segMitte(m.f)),zoom:Math.max(map.getZoom(),16.5),duration:500});if(istMobil())setSheet('klein');}});}
+
+// Zentrale: Zeile je Fahrzeug unterwegs (Rest, Neuberechnungen, gesperrter Abschnitt auf der Route)
+function fzrTxt(c){const z=ZUW[c];if(!aktiv(z))return '';const t=[],r=fzR(z);let s=0;
+  if(z.status==='quittiert'){const ps=posAkt(c,z);
+    if(ps&&r){const g=rGeo(r),pr=rProj(g,ps.p[0]-X0,ps.p[1]-Y0);s=pr.d<FA.ABW_M*2?pr.s:0;
+      t.push(`fährt (${ps.q==='gps'?'GPS':'Simulation'}): noch ${km(Math.max(0,g.L-pr.s))}, ca. ${Math.max(0,(g.Tg-pr.t)/60).toFixed(1)} min${pr.d>FA.ABW_M?', gerade neben der Route':''}`);}
+    else if(z.tq)t.push(`quittiert ${zeitTxt(z.tq)}, keine Position`);}
+  if(z.fahrt)t.push(`Route ${z.fahrt.n}× im Fahrzeug neu berechnet, zuletzt ${zeitTxt(z.fahrt.t)} (${GRUND[z.fahrt.grund]||'neu'})`);
+  if(r){const g=rGeo(r),hit=r.rows.find((x,k)=>g.re[k]>s&&MELD.some(m=>m.f===x.f&&meldGilt(m)&&m.kl.includes(c)));
+    if(hit)t.push(`⚠ Route führt über den gesperrten Abschnitt ${segName(hit.f)}. Das Fahrzeug rechnet neu, sobald seine Ansicht offen ist.`);}
+  if(z.pruef==='abweichend'){const t0=z.fahrt?z.fahrt.t:z.a.t,m=MELD.find(x=>meldGilt(x)&&x.kl.includes(c)&&(x.tb||x.t)>t0);
+    t.push(m?`Wegen der Sperre ${m.name} gilt eine neue Route, sobald das Fahrzeug sie übernimmt (Fahrzeugansicht offen).`:'Route weicht von der Rechnung der Zentrale ab.');}
+  return t.map(esc).join('<br>');}
+function restLinien(){const out=[];if(ansicht!=='gis')return out;
+  for(const c of ['A','B','C','D']){const z=ZUW[c],r=z&&z.status==='quittiert'?fzR(z):null;if(!r)continue;
+    const ps=posAkt(c,z);let s=0;if(ps){const pr=rProj(rGeo(r),ps.p[0]-X0,ps.p[1]-Y0);if(pr.d<FA.ABW_M*2)s=pr.s;}
+    const col=css('--r'+c);rRest(r,s).forEach(x=>out.push({type:'Feature',properties:{col},geometry:{type:'LineString',coordinates:x.pts.map(q=>rel2wgs(q[0],q[1]))}}));}
+  return out;}
+
+// Mehrere Fahrzeuge unterwegs (Status quittiert): Hinweise nach Modellzeit. Ankunft = Position jetzt (falls bekannt), sonst «quittiert».
+// nur = Klasse: nur Hinweise, die sie betreffen
+function konflikte(nur){const P=D.profile,lo=D.attr_cols.indexOf('v9_untere_schranke_m'),me=D.attr_cols.indexOf('v9_fahrbahn_median_m'),jetzt=Date.now(),L=[];
+  for(const c of ['A','B','C','D']){const z=ZUW[c];if(!z||z.status!=='quittiert'||!z.r)continue;const r=fzR(z);if(!r)continue;
+    const g=rGeo(r),own=FAHRT&&FAHRT.aid===z.a.id&&FAHRT.p?FAHRT:null,ps=own?{p:absP(own.p)}:posAkt(c,z);let s0=0,t0=z.tq||jetzt;
+    if(ps){const pr=rProj(g,ps.p[0]-X0,ps.p[1]-Y0,own?own.s:null);if(pr.d<FA.ABW_M*2){s0=pr.s;t0=jetzt-pr.t*1000;}}
+    L.push({c,z,r,g,s0,eta:t=>t0+t*1000});}
+  const out=[];
+  for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j];if(nur&&a.c!==nur&&b.c!==nur)continue;
+    const ankA=a.eta(a.g.Tg),ankB=b.eta(b.g.Tg);
+    // 1) dieselbe Zufahrt: Ziele nah beieinander, letzter Abschnitt gleich
+    const la=a.r.rows[a.r.rows.length-1],lb=b.r.rows[b.r.rows.length-1];
+    if(la&&lb&&la.f===lb.f&&Math.hypot(a.z.a.z[0]-b.z.a.z[0],a.z.a.z[1]-b.z.a.z[1])<150&&ankA>jetzt-60000&&ankB>jetzt-60000)
+      out.push({t:Math.min(ankA,ankB),txt:`${a.c} und ${b.c} fahren dieselbe Zufahrt an (${segName(la.f)}). Ankunft etwa ${zeitTxt(ankA)} (${a.c}) und ${zeitTxt(ankB)} (${b.c}): Reihenfolge und Aufstellplatz absprechen.`});
+    // 2) Gegenverkehr in einer Engstelle: gleicher Abschnitt in Gegenrichtung, Zeitfenster überlappen, Fahrbahn schmaler als beide Karosserien + Abstand
+    let eng=null;
+    a.r.rows.forEach((ra,ka)=>{if(eng||a.g.re[ka]<=a.s0)return;const ta0=a.eta(ka?a.g.rt[ka-1]:0),ta1=a.eta(a.g.rt[ka]);
+      b.r.rows.forEach((rb,kb)=>{if(eng||rb.f!==ra.f||rb.pi!==ra.pi||b.g.re[kb]<=b.s0||(ra.b-ra.a)*(rb.b-rb.a)>=0)return;
+        if(Math.min(Math.max(ra.a,ra.b),Math.max(rb.a,rb.b))<=Math.max(Math.min(ra.a,ra.b),Math.min(rb.a,rb.b)))return;
+        const tb0=b.eta(kb?b.g.rt[kb-1]:0),tb1=b.eta(b.g.rt[kb]);
+        if(ta1+FA.ETA_ENG_S*1000<tb0||tb1+FA.ETA_ENG_S*1000<ta0||Math.max(ta1,tb1)<jetzt)return;
+        const w=D.attr[ra.f][lo]!=null?D.attr[ra.f][lo]:D.attr[ra.f][me],noetig=P[a.c].kar+P[b.c].kar+FA.ENG_ABST_M;
+        if(w==null||w>=noetig)return;
+        eng={t:Math.max(ta0,tb0),txt:`Gegenverkehr in einer Engstelle: ${a.c} und ${b.c} begegnen sich etwa um ${zeitTxt(Math.max(ta0,tb0))} auf ${segName(ra.f)} (Fahrbahn ${w.toFixed(1)} m, zum Kreuzen etwa ${noetig.toFixed(1)} m nötig).`};});});
+    if(eng)out.push(eng);
+    // 3) etwa gleichzeitig an derselben Kreuzung, aus verschiedenen Strassen
+    let kr=null;const knA=new Map();
+    for(let k=0;k<a.r.rows.length-1;k++){if(a.g.re[k]<=a.s0)continue;const p=a.r.rows[k].pts[a.r.rows[k].pts.length-1];knA.set(Math.round(p[0])+','+Math.round(p[1]),k);}
+    for(let k=0;k<b.r.rows.length-1&&!kr;k++){if(b.g.re[k]<=b.s0)continue;const p=b.r.rows[k].pts[b.r.rows[k].pts.length-1],ka=knA.get(Math.round(p[0])+','+Math.round(p[1]));if(ka==null)continue;
+      const ra=a.r.rows[ka],rb=b.r.rows[k];if(ra.f===rb.f)continue;
+      const ea=a.eta(a.g.rt[ka]),eb=b.eta(b.g.rt[k]);if(Math.abs(ea-eb)>FA.ETA_KREUZ_S*1000||Math.max(ea,eb)<jetzt)continue;
+      kr={t:Math.min(ea,eb),txt:`${a.c} und ${b.c} erreichen etwa gleichzeitig (um ${zeitTxt(Math.min(ea,eb))}) die Kreuzung ${segName(ra.f)} / ${segName(rb.f)}, aus verschiedenen Richtungen.`};}
+    if(kr)out.push(kr);}
+  return out.sort((x,y)=>x.t-y.t).slice(0,6);}
+function konfliktUI(){const el=$('#konfl');if(!el)return;const k=konflikte();
+  const h=k.length?`<h3>Mehrere Fahrzeuge unterwegs</h3>${k.map(x=>`<div class="fa-k2">⚠ ${esc(x.txt)}</div>`).join('')}<p class="small muted" style="margin:0">Nach Modellfahrzeit ohne Verkehr, nur ein Hinweis: Die Routenwahl ändert sich dadurch nicht. Fahrzeuge ohne Position zählen ab «quittiert».</p>`:'';
+  if(el._h!==h){el._h=h;el.innerHTML=h;}}
+
+// Fahrzeug-Marker (eigene Fahrt und Positionen aus anderen Fenstern), Spitze = Fahrtrichtung
+function fzMarker(){if(!map)return;
+  for(const c of ['A','B','C','D']){const z=ZUW[c],own=FAHRT&&FAHRT.c===c&&FAHRT.p&&z&&FAHRT.aid===z.a.id?FAHRT:null,ps=!own&&z&&z.status==='quittiert'?posAkt(c,z):null;
+    let p=null,h=null;if(own){p=rel2wgs(...own.p);h=own.h;}else if(ps){p=lv2wgs(...ps.p);h=ps.h;}
+    if(!p){if(fzMk[c]){fzMk[c].remove();delete fzMk[c];}continue;}
+    if(!fzMk[c]){const el=document.createElement('div');el.className='fzmk';el.style.setProperty('--k',`var(--r${c})`);el.innerHTML=`<i></i><b>${c}</b>`;
+      el.title=`Fahrzeug ${c} · ${PN[c]}`;fzMk[c]=new maplibregl.Marker({element:el}).setLngLat(p).addTo(map);}
+    else fzMk[c].setLngLat(p);
+    const el=fzMk[c].getElement(),i=el.querySelector('i');el.classList.toggle('eigen',!!own);
+    if(Array.isArray(h)&&Math.hypot(h[0],h[1])>0.1){i.hidden=false;i.style.transform=`rotate(${Math.atan2(h[0],h[1])*180/Math.PI}deg)`;}else i.hidden=true;}}
+
+// Ungeklärte Stellen und Kurvenhinweise nur vor dem Fahrzeug
+function engVor(z){const v=z&&z.v;if(!v)return [];const F=FAHRT&&FAHRT.aid===z.a.id?FAHRT:null,r=fzR(z);if(!F||!r||r!==v.exp)return v.eng;
+  const g=rGeo(r);return v.eng.filter(e=>{if(e._s==null)e._s=rProj(g,e.mitte[0],e.mitte[1]).s+(e.lmax||0)/2;return e._s>F.s;});}
+function kurvenVor(z,r){const F=FAHRT&&FAHRT.aid===z.a.id?FAHRT:null;if(!F||r!==F.r)return kurvenHinweis(r);
+  const g=rGeo(r),ni=D.attr_cols.indexOf('name'),ii=D.attr_cols.indexOf('seg_id'),hat=(k,n)=>{const a=D.attr[r.rows[k].f];return a[ni]===n||a[ii]===n;};
+  const vorne=t=>{const m=t.match(/^(.*?) -> (.*?) \(/);let gef=false;
+    if(m){for(let k=0;k<r.rows.length-1;k++)if(hat(k,m[1])&&hat(k+1,m[2])){gef=true;if(g.re[k]>F.s-5)return true;}}
+    else{const n=t.replace(/ Kurve \(.*$/,'');for(let k=0;k<r.rows.length;k++)if(hat(k,n)){gef=true;if(g.re[k]>F.s)return true;}}
+    return !gef;};   // nicht zuordenbar: lieber zeigen
+  const h=kurvenHart(r).filter(vorne).map(t=>t.replace(/:\s*UNMOEGLICH/g,'').replace(/ Grad\)/g,'°)'));
+  return h.length?[`Kurve laut Schleppkurven-Modell nur mit Rangieren: ${h.slice(0,2).join('; ')}. GreenRoute rechnet dafür nur einen Zeitzuschlag, keine Sperre – vor Ort prüfen.`]:[];}
+
+// Neu rechnen für den Auftrag z (Abweichung, eigene Meldung, bestätigte Sperre). o: {p: LV95, h: Fahrtrichtung, hAlt, name}
+// Gleicher Router, beide Modi; die Fahrerwahl bleibt, sonst die vorhandene Route (mit Hinweis). Ergebnis in z.fahrt (gespeichert).
+async function neuRouten(z,grund,o){o=o||{};if(!z||!['gesendet','empfangen','quittiert'].includes(z.status)||z.rr)return;
+  z.rr=true;const F=FAHRT&&FAHRT.aid===z.a.id?FAHRT:null;if(F){F.warte=true;faUI(true);}
+  // mit genau den Werten rechnen, die gespeichert werden (sonst kann die Kennung in anderen Fenstern um 1 m abweichen)
+  const c=z.a.c,p=rd(o.p||(z.fahrt&&z.fahrt.s)||z.a.s);let h=o.h?o.h.map(x=>Math.round(x*1e4)/1e4):null,wenden=false,v=null;
+  try{let B=await routeFuer(p,z.a.z,null,{h,tmp:tmpFuer(z)});v=vgl(c,B);
+    if(h&&!v.val&&!v.exp){B=await routeFuer(p,z.a.z,null,{h:null,tmp:tmpFuer(z)});v=vgl(c,B);h=null;wenden=!!(v.val||v.exp);}}
+  catch(e){v=null;}
+  z.rr=false;if(F)F.warte=false;
+  if(!aktiv(z)||(F&&FAHRT!==F))return;
+  if(!v||v.fehler||(!v.val&&!v.exp)){z.faFehler=`Ab hier keine Route für ${c}${v&&v.v&&!v.v.ok?': '+de(v.v.text||v.v.ursache):''}. Rückfrage bei der Zentrale.`;faUI(true);uiRoute();return;}
+  z.faFehler=null;
+  const r={val:v.val||null,exp:v.zeigeE?v.exp:null},routen=['val','exp'].filter(k=>r[k]);
+  let wechsel=null;if(!r[z.wahl]){z.wahl=r.val?'val':'exp';wechsel=z.wahl;}
+  const neu=r[z.wahl];
+  // nach einer Hindernismeldung: zeigt die neue Route gegen die bisherige Fahrtrichtung?
+  if(!wenden&&o.hAlt){const g=rGeo(neu),q=rPunkt(g,Math.min(25,g.L));const dx=q.p[0]-g.P[0][0],dy=q.p[1]-g.P[0][1],n=Math.hypot(dx,dy);if(n>3&&(dx*o.hAlt[0]+dy*o.hAlt[1])/n<-0.5)wenden=true;}
+  const sig={};routen.forEach(k=>sig[k]=routeSig(r[k]));
+  z.r=r;z.v=v;z.pruef='ok';
+  z.fahrt={n:((z.fahrt&&z.fahrt.n)||0)+1,t:Date.now(),s:p,h,grund,routen,sig};
+  speichern();
+  const txt=(grund==='abweichung'?'Neue Route ab hier: Abweichung erkannt.':grund==='hindernis'?`Neue Route ohne ${o.name}.`:`Neue Route: ${o.name} ist von der Zentrale gesperrt.`)+(wenden?' Zuerst wenden.':'')+
+    (wechsel==='exp'?' Ab hier gibt es keine validierte Route mehr: Route mit ungeklärten Stellen (gelb).':wechsel==='val'?' Ab hier gibt es eine validierte Route.':'');
+  z.faInfo={t:Date.now(),txt};
+  if(F){F.r=neu;F.g=rGeo(neu);const pr=F.p?rProj(F.g,F.p[0],F.p[1]):{d:0,s:0};F.s=pr.d<FA.ABW_M*2?pr.s:0;F.d=pr.d;F.ab=null;F.abwN=0;F.ziel=false;F.row=-1;F.k2=null;
+    if(F.quelle==='sim'&&!F.timer)F.timer=setInterval(faSimTick,500);}
+  toast(txt,5000);zeichneRoute();uiRoute();
+  const el=$('#f-auftrag');if(el){el.classList.remove('e-flash');void el.offsetWidth;el.classList.add('e-flash');}}
+
+// Karte auf das Fahrzeug: auf dem Handy in die Mitte des sichtbaren Kartenteils über dem Bedienfeld
+function faZentrum(p,zoom,ms){if(!map||!p)return;let dy=0;
+  if(istMobil()){const t=$('.pult').getBoundingClientRect().top,h=$('#map').getBoundingClientRect();dy=-Math.max(0,(h.bottom-t)/2);}
+  map.easeTo({center:rel2wgs(...p),zoom:Math.max(map.getZoom(),zoom||15.5),offset:[0,dy],duration:ms||450});}
+// Fahrt starten: 'sim' = entlang der Route mit Modellgeschwindigkeit × Tempo; 'gps' = Standort dieses Geräts
+function faStart(quelle){const z=fzAuftrag();if(!z||z.status!=='quittiert')return;const r=fzR(z);if(!r){toast('Keine Route für die Fahrt.',2500);return;}
+  if(quelle==='gps'&&!('geolocation' in navigator)){toast('Dieses Gerät gibt keinen Standort frei. «Fahrt simulieren» verwenden.',4000);return;}
+  faStop(true);
+  const g=rGeo(r),q=rPunkt(g,0);
+  FAHRT={c:z.a.c,aid:z.a.id,quelle,tempo:FA.TEMPI[0],s:0,r,g,p:null,h:null,d:0,ab:null,abwN:0,tNeu:0,folgen:true,meld:false,ziel:false,warte:false,row:-1,gpsTxt:''};
+  if(quelle==='sim'){FAHRT.timer=setInterval(faSimTick,500);faFix(q.p,q.h,0);}
+  else{FAHRT.gpsTxt='Warte auf die GPS-Position …';FAHRT.watch=navigator.geolocation.watchPosition(faGps,faGpsFehler,{enableHighAccuracy:true,maximumAge:2000,timeout:20000});}
+  uiFahrzeug();zeichnePunkte();
+  if(istMobil())setSheet('mitte');
+  if(FAHRT&&FAHRT.p)setTimeout(()=>{if(FAHRT)faZentrum(FAHRT.p,16,600);},50);}
+function faStop(still){const F=FAHRT;if(!F)return;if(F.timer)clearInterval(F.timer);if(F.watch!=null)try{navigator.geolocation.clearWatch(F.watch);}catch(_){}
+  FAHRT=null;fzMarker();if(map)zeichnePunkte();if(!still){zeichneRoute();einpassen();uiFahrzeug();}}
+function faSimTick(){const F=FAHRT;if(!F||F.warte||F.ziel)return;const z=fzAuftrag();
+  if(!z||z.a.id!==F.aid||z.status!=='quittiert'){faStop();return;}
+  const dt=0.5*F.tempo,si=D.attr_cols.indexOf('speed');
+  if(F.ab&&F.ab.aktiv){const A=F.ab;if(A.ende)return;A.s=Math.min(A.S[A.S.length-1],A.s+A.v*dt);const q=polyPunkt(A.P,A.S,A.s);
+    if(A.s>=A.S[A.S.length-1])A.ende=true;
+    faFix(q.p,q.h||F.h,0);
+    // Ende der Abzweigung, ohne dass die Abweichung schon erkannt wurde (z. B. parallele Strasse): jetzt neu rechnen
+    if(A.ende&&FAHRT===F&&F.ab===A&&!z.rr){F.tNeu=Date.now();neuRouten(z,'abweichung',{p:absP(q.p),h:q.h||F.h});}
+    return;}
+  const q0=rPunkt(F.g,F.s),x=F.r.rows[Math.min(q0.row,F.r.rows.length-1)],v=Math.max(2,(D.attr[x.f][si]||30)/3.6);
+  F.s=Math.min(F.g.L,F.s+v*dt);
+  if(F.ab&&F.s>=F.ab.sAb){F.s=F.ab.sAb;F.ab.aktiv=true;}
+  const q=rPunkt(F.g,F.s);faFix(q.p,q.h||F.h,0);
+  if(FAHRT===F&&!F.ab&&F.s>=F.g.L-0.5)faZiel();}
+function faZiel(){const F=FAHRT;if(!F||F.ziel)return;F.ziel=true;if(F.timer){clearInterval(F.timer);F.timer=null;}
+  toast('Am Einsatzort. «Vor Ort melden» schliesst die Fahrt ab.',4000);faUI(true);const b=$('#f-weiter');if(b){b.classList.remove('e-flash');void b.offsetWidth;b.classList.add('e-flash');}}
+// gemeinsame Verarbeitung jeder Position (Simulation und GPS); p relativ
+function faFix(p,h,acc){const F=FAHRT;if(!F)return;const z=fzAuftrag();if(!z||z.a.id!==F.aid)return;
+  F.p=p;if(h)F.h=h;
+  const pr=rProj(F.g,p[0],p[1],F.s);F.d=pr.d;
+  if(F.quelle==='gps'&&pr.d<FA.ABW_M)F.s=pr.s;
+  // Abweichung: zwei Positionen nacheinander mehr als ABW_M neben der Route (GPS nur bei genügender Genauigkeit)
+  if(pr.d>FA.ABW_M){if(!acc||acc<=FA.GPS_GENAU_M)F.abwN++;}else F.abwN=0;
+  posSchreiben(F.c,{p:absP(p).map(x=>Math.round(x*10)/10),h:F.h?F.h.map(x=>Math.round(x*1000)/1000):null,t:Date.now(),aid:F.aid,q:F.quelle});
+  if(F.abwN>=FA.ABW_N&&!z.rr&&Date.now()-F.tNeu>FA.PAUSE_S*1000){F.abwN=0;F.tNeu=Date.now();neuRouten(z,'abweichung',{p:absP(p),h:F.h});}
+  if(F.quelle==='gps'&&!F.ziel&&pr.d<FA.ABW_M&&F.g.L-F.s<FA.ZIEL_M)faZiel();
+  fzMarker();
+  if(F.folgen)faZentrum(p);
+  const row=rPunkt(F.g,F.s).row,abA=!!(F.ab&&F.ab.aktiv);
+  if(row!==F.row||abA!==F.abA){F.row=row;F.abA=abA;zeichneRoute();
+    // Auftrag nur neu aufbauen, wenn eine ungeklärte Stelle oder ein Kurvenhinweis hinter dem Fahrzeug liegt (sonst gehen Tipps verloren)
+    const k2=engVor(z).length+'|'+kurvenVor(z,F.r).join();if(k2!==F.k2){const erst=F.k2==null;F.k2=k2;if(!erst){uiFahrzeug();return;}}}
+  faUI();}
+function faGps(pos){const F=FAHRT;if(!F)return;const c=pos.coords,[E,N]=wgs2lv(c.longitude,c.latitude),B=gebietBox();
+  if(E<B[0]-300||E>B[2]+300||N<B[1]-300||N>B[3]+300){F.gpsTxt='Der GPS-Standort liegt ausserhalb des Gebiets von GreenRoute. Für die Präsentation «Fahrt simulieren» verwenden.';faUI(true);return;}
+  if(c.accuracy>FA.GPS_GENAU_M*2){F.gpsTxt=`GPS ungenau (±${Math.round(c.accuracy)} m), warte auf eine bessere Position …`;faUI();return;}
+  const p=[E-X0,N-Y0];let h=null;
+  if(c.heading!=null&&!isNaN(c.heading)&&(c.speed||0)>1){const a=c.heading*Math.PI/180;h=[Math.sin(a),Math.cos(a)];}
+  else if(F.p){const dx=p[0]-F.p[0],dy=p[1]-F.p[1],d=Math.hypot(dx,dy);if(d>8)h=[dx/d,dy/d];}
+  F.gpsTxt=`GPS ±${Math.round(c.accuracy)} m`;const erst=!F.p;faFix(p,h||F.h,c.accuracy);
+  if(erst)faZentrum(p,16,600);}
+function faGpsFehler(e){if(!FAHRT)return;FAHRT.gpsTxt=e&&e.code===1?'Standort nicht freigegeben. In den Einstellungen des Browsers erlauben oder «Fahrt simulieren» verwenden.':'Kein GPS-Standort ('+(e&&e.message||'Zeitüberschreitung')+').';faUI(true);}
+// Simulation: an der nächsten Kreuzung vor dem Fahrzeug in eine andere befahrbare Strasse abbiegen (nicht nach Route)
+function faAbweichung(){const F=FAHRT;if(!F||F.quelle!=='sim'||F.ab||F.ziel||F.warte)return;const r=F.r,g=F.g,c=F.c;
+  if(!KXY){KXY=new Map();for(let j=0;j<D.nodes.length/2;j++)KXY.set(D.nodes[2*j]+','+D.nodes[2*j+1],j);
+    KNOT=new Map();D.segs.forEach((s,f)=>s[0].forEach((ids,pi)=>ids.forEach((j,ix)=>{let l=KNOT.get(j);if(!l)KNOT.set(j,l=[]);l.push([f,pi,ix]);})));}
+  const ai=D.attr_cols.indexOf('ausserhalb'),si=D.attr_cols.indexOf('speed'),hi=D.attr_cols.indexOf('highway_type');
+  // nur in gewöhnliche, benannte Strassen abbiegen (keine Autobahn-Anschlüsse, Zufahrten oder Wege)
+  const STR=new Set(['residential','living_street','tertiary','secondary','primary','unclassified']);
+  for(let k=0;k<r.rows.length-1;k++){const sAb=g.re[k];if(sAb<F.s+20)continue;
+    const pe=r.rows[k].pts[r.rows[k].pts.length-1],j=KXY.get(Math.round(pe[0]*100)+','+Math.round(pe[1]*100));if(j==null)continue;
+    const nicht=new Set([r.rows[k].f,r.rows[k+1].f]),ast=[];
+    for(const [f,pi,ix] of KNOT.get(j)||[]){if(nicht.has(f)||D.attr[f][ai]||!(D.kosten.E[c][f]>0)||!STR.has(D.attr[f][hi])||!D.attr[f][D.attr_cols.indexOf('name')])continue;const ids=D.segs[f][0][pi];
+      for(const dir of [1,-1]){const P=[];let L=0;
+        for(let i=ix;i>=0&&i<ids.length;i+=dir){const q=[D.nodes[2*ids[i]]/100,D.nodes[2*ids[i]+1]/100];if(P.length)L+=Math.hypot(q[0]-P[P.length-1][0],q[1]-P[P.length-1][1]);P.push(q);if(L>=FA.AB_MAX_M)break;}
+        if(P.length>1&&L>=FA.AB_MIN_M)ast.push({P,L,f});}}
+    if(!ast.length)continue;
+    const a=ast.sort((x,y)=>y.L-x.L)[0],S=[0];for(let i=1;i<a.P.length;i++)S.push(S[i-1]+Math.hypot(a.P[i][0]-a.P[i-1][0],a.P[i][1]-a.P[i-1][1]));
+    F.ab={sAb,P:a.P,S,s:0,v:Math.max(3,(D.attr[a.f][si]||30)/3.6),aktiv:false,ende:false,f:a.f,name:segName(a.f)};
+    toast(`Simulation: Das Fahrzeug biegt ${Math.round(sAb-F.s)} m weiter vorne in «${F.ab.name}» ab, nicht nach Route.`,4000);zeichneRoute();faUI(true);return;}
+  toast('Keine passende Abzweigung vor dem Fahrzeug gefunden.',2500);}
+// nächster Abschnitt bei p (relativ), höchstens 40 m (Meldung neben der Route)
+function naechsterAbschnitt(p){if(!bauGrid)bauGrid=bauGitter(D);const G=BAU_K.G,N=D.nodes;let best=null;
+  for(let i=Math.floor(p[0]/G)-1;i<=Math.floor(p[0]/G)+1;i++)for(let j=Math.floor(p[1]/G)-1;j<=Math.floor(p[1]/G)+1;j++)for(const f of (bauGrid.get(i+','+j)||[]))
+    for(const ids of D.segs[f][0])for(let k=0;k<ids.length-1;k++){const ax=N[2*ids[k]]/100,ay=N[2*ids[k]+1]/100,dx=N[2*ids[k+1]]/100-ax,dy=N[2*ids[k+1]+1]/100-ay,l2=dx*dx+dy*dy,
+      u=l2?Math.max(0,Math.min(1,((p[0]-ax)*dx+(p[1]-ay)*dy)/l2)):0,d=Math.hypot(p[0]-ax-u*dx,p[1]-ay-u*dy);if(d<=40&&(!best||d<best[0]))best=[d,f];}
+  return best?best[1]:null;}
+// Hindernis melden: Abschnitt vor dem Fahrzeug (bzw. der, auf dem es neben der Route steht)
+function faMelden(art){const F=FAHRT,z=fzAuftrag();if(!F||!z||!F.p||z.a.id!==F.aid)return;
+  let f=null;
+  if(F.ab&&F.ab.aktiv)f=F.ab.f;
+  else if((F.d||0)>FA.ABW_M)f=naechsterAbschnitt(F.p);
+  else{const q=rPunkt(F.g,F.s);let k=q.row;if(k<F.r.rows.length-1&&F.g.re[k]-F.s<15)k++;f=F.r.rows[k].f;}
+  if(f==null){toast('Kein Abschnitt in der Nähe gefunden.',2500);return;}
+  const kl=art==='gesperrt'?['REF','A','B','C','D']:KL_AB(F.c);
+  meldLaden();const m={id:'M'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),c:F.c,aid:z.a.id,nr:z.a.nr,f,name:segName(f),art,kl,t:Date.now(),p:absP(F.p).map(x=>Math.round(x)),status:'offen'};
+  MELD.push(m);meldSchreiben();F.meld=false;zeichneDemo();
+  toast(`Gemeldet: ${m.name}. GreenRoute rechnet ohne diesen Abschnitt neu. Für andere Fahrzeuge gilt die Meldung erst, wenn die Zentrale sie bestätigt.`,6000);
+  F.tNeu=Date.now();neuRouten(z,'hindernis',{p:absP(F.p),h:null,hAlt:F.h,name:m.name});}
+
+// Fahrt-Kasten im Fahrzeug. Nur neu aufbauen, wenn sich etwas ändert (sonst gehen Tipps verloren); Zahlen laufend nachführen.
+function faUI(force){const el=$('#f-fahrt');if(!el)return;const z=fzAuftrag();if(!z){el.innerHTML='';return;}const F=FAHRT&&FAHRT.aid===z.a.id?FAHRT:null;
+  const info=z.faInfo&&Date.now()-z.faInfo.t<15000?z.faInfo:null,kf=konflikte(z.a.c),eig=MELD.filter(m=>m.aid===z.a.id);
+  const key=JSON.stringify([!!F,F&&F.quelle,F&&F.tempo,F&&!!F.ab,F&&F.ab&&F.ab.aktiv,F&&F.meld,F&&F.warte,F&&F.ziel,F&&F.folgen,F&&F.gpsTxt,info&&info.t,z.faFehler,kf.map(x=>x.txt),eig.map(m=>m.id+m.status)]);
+  if(!force&&el._k===key){faTxt(z,F);return;}el._k=key;
+  let h='';
+  if(!F)h=`<div class="fa"><div class="fa-k">Fahrt</div><div class="e-row"><button class="btn prim" id="fa-sim">▶ Fahrt simulieren</button><button class="btn" id="fa-gps" title="Standort dieses Geräts verwenden">◎ GPS</button></div>
+    <div class="e-note">Die Route folgt dem Fahrzeug: Weicht es ab, rechnet GreenRoute selbst neu, ohne Eingabe. «GPS» nutzt den Standort dieses Geräts (nur im Gebiet von GreenRoute sinnvoll).</div></div>`;
+  else h=`<div class="fa"><div class="fa-k"><span>Fahrt · ${F.quelle==='sim'?'Simulation':'GPS'}</span><span class="row" style="gap:6px">${F.quelle==='sim'&&!F.ziel?`<button class="btn" id="fa-tempo" title="Tempo der Simulation umschalten" aria-label="Tempo ${F.tempo}-fach">×${F.tempo}</button>`:''}<button class="btn" id="fa-stop">Stopp</button></span></div>
+    <div class="fa-rest" id="fa-rest"></div><div class="e-note" id="fa-gps-t"></div><div class="e-note" id="fa-eng"></div>
+    ${F.warte?'<div class="fa-neu">GreenRoute rechnet die Route neu …</div>':info?`<div class="fa-neu" role="status">↻ ${esc(info.txt)} <small>${zeitTxt(info.t)}</small></div>`:''}
+    ${z.faFehler?`<div class="fa-fehl">${esc(z.faFehler)}</div>`:''}
+    ${kf.map(x=>`<div class="fa-k2">⚠ ${esc(x.txt)}</div>`).join('')}
+    ${F.meld?`<div class="e-sub" style="font-weight:600">Was ist vor dem Fahrzeug?</div><div class="fa-ms"><button class="btn warnb" id="fa-m-g">Strasse gesperrt<br><small>gilt für alle</small></button><button class="btn warnb" id="fa-m-e">Zu eng oder zu tief für ${F.c}<br><small>gilt für ${KL_AB(F.c).join(', ')}</small></button></div><button class="btn" id="fa-m-x">Abbrechen</button>`
+      :`<div class="e-row">${F.quelle==='sim'&&!F.ziel?`<button class="btn" id="fa-ab" ${F.ab||F.warte?'disabled':''}>${F.ab?'Biegt gleich ab …':'↪ Abweichung simulieren'}</button>`:''}<button class="btn fa-hm" id="fa-hm" ${F.p&&!F.warte?'':'disabled'}>⚠ Hindernis melden</button></div>`}
+    ${F.folgen?'':'<button class="btn" id="fa-folgen">Karte folgt dem Fahrzeug</button>'}</div>`;
+  if(eig.length)h+=`<div class="e-note">${eig.map(m=>`Meldung ${esc(m.name)}: ${m.status==='offen'?'die Zentrale prüft, bis dahin gilt sie nur für dieses Fahrzeug':m.status==='bestaetigt'?'von der Zentrale bestätigt, gilt für alle':m.status==='verworfen'?'von der Zentrale nicht übernommen, gilt nur für dieses Fahrzeug':'aufgehoben'}.`).join('<br>')}</div>`;
+  el.innerHTML=h;faTxt(z,F);
+  const on=(s,f)=>{const b=el.querySelector(s);if(b)b.onclick=f;};
+  on('#fa-sim',()=>faStart('sim'));on('#fa-gps',()=>faStart('gps'));on('#fa-stop',()=>faStop());
+  on('#fa-tempo',()=>{const i=FA.TEMPI.indexOf(F.tempo);F.tempo=FA.TEMPI[(i+1)%FA.TEMPI.length];faUI(true);});
+  on('#fa-ab',faAbweichung);on('#fa-hm',()=>{F.meld=true;faUI(true);});on('#fa-m-x',()=>{F.meld=false;faUI(true);});
+  on('#fa-m-g',()=>faMelden('gesperrt'));on('#fa-m-e',()=>faMelden('eng'));
+  on('#fa-folgen',()=>{F.folgen=true;faZentrum(F.p);faUI(true);});}
+function faTxt(z,F){const a=$('#fa-rest');if(!a||!F)return;const g=F.g,restM=Math.max(0,g.L-F.s),restT=Math.max(0,g.Tg-rPunkt(g,F.s).t);
+  a.innerHTML=F.ziel?'Am Einsatzort':!F.p?'–':`noch ${km(restM)} <small>· ca. ${(restT/60).toFixed(1)} min Modellfahrzeit</small>`;
+  const gt=$('#fa-gps-t');if(gt)gt.textContent=F.quelle==='gps'?(F.gpsTxt||''):(F.ab&&F.ab.aktiv?`Simulation: Das Fahrzeug fährt nicht nach Route (${F.ab.name}).`:'');
+  const e=$('#fa-eng');if(e){const eng=engVor(z);let t='';
+    if((F.d||0)>FA.ABW_M&&!F.warte)t=`${Math.round(F.d)} m neben der Route.`;
+    else if(z.wahl==='exp'&&eng.length){const x=eng[0],ds=Math.max(0,(x._s||0)-(x.lmax||0)-F.s);t=`Nächste ungeklärte Stelle: ${x.name} in ${ds<1000?Math.round(ds/10)*10+' m':km(ds)}.`;}
+    e.textContent=t;}}
+// jede Sekunde: Positionen anderer Fenster (Marker), Texte und Restrouten der Zentrale, Hinweise
+function faPuls(){if(!D||!map)return;pulsN++;posLaden();fzMarker();
+  if(ansicht==='gis'){document.querySelectorAll('[data-fzr]').forEach(e=>{const h=fzrTxt(e.dataset.fzr);if(e._h!==h){e._h=h;e.innerHTML=h;}});
+    if(pulsN%2===0&&map.getSource('fz-rest'))map.getSource('fz-rest').setData({type:'FeatureCollection',features:restLinien()});
+    if(pulsN%3===0)konfliktUI();}
+  else if(pulsN%3===0){faUI();
+    // Fahrzeug: Routen anderer Fahrzeuge unterwegs erst nach der eigenen nachrechnen (für Hinweise «mehrere Fahrzeuge»)
+    const z=fzAuftrag();if(z&&z.r&&z.status==='quittiert')for(const c of ['A','B','C','D']){const y=ZUW[c];if(y&&y!==z&&y.status==='quittiert'&&y.r===null){auftragRoute(y);break;}}}}
+addEventListener('storage',e=>{if(!D)return;
+  if(e.key===MELD_KEY){const alt=new Map(MELD.map(m=>[m.id,m.status]));meldLaden();
+    for(const m of MELD){const a=alt.get(m.id);
+      if(a===undefined&&m.status==='offen'&&ansicht==='gis')toast(`Meldung von Fahrzeug ${m.c}: ${m.name} – ${m.art==='gesperrt'?'Strasse gesperrt':'zu eng oder zu tief'}. Bitte im Tab «Einsatz» prüfen.`,6000);
+      else if(a&&a!==m.status&&ansicht==='einsatz'&&m.c===profil)toast(m.status==='bestaetigt'?`Die Zentrale hat die Meldung ${m.name} bestätigt: Sie gilt jetzt für alle.`:m.status==='verworfen'?`Die Zentrale übernimmt die Meldung ${m.name} nicht für andere. Für dieses Fahrzeug bleibt sie gemieden.`:`Sperre ${m.name} aufgehoben.`,5000);}
+    meldAnwenden();uiRoute();}
+  else if(e.key===POS_KEY){posLaden();fzMarker();}});
 
 // Auftrag oder Status aus einem anderen Fenster dieses Browsers
 addEventListener('storage',e=>{if(e.key!==ZKEY||!D)return;
-  const alt={};for(const c in ZUW)alt[c]=[ZUW[c].a.t,ZUW[c].status,ZUW[c].wahl];
+  const alt={};for(const c in ZUW)alt[c]=[ZUW[c].a.t,ZUW[c].status,ZUW[c].wahl,ZUW[c].fahrt&&ZUW[c].fahrt.t];
   laden();
   // Fahrzeug folgt einem neuen Auftrag, wenn es selbst frei ist (eingebettet in der Präsentation immer)
   if(ansicht==='einsatz'){const neu=['A','B','C','D'].filter(c=>ZUW[c]&&(!alt[c]||alt[c][0]!==ZUW[c].a.t)).sort((x,y)=>ZUW[y].a.t-ZUW[x].a.t)[0];
@@ -1430,6 +1871,7 @@ addEventListener('storage',e=>{if(e.key!==ZKEY||!D)return;
       else if((!z&&a)||(z&&a&&a[0]===z.a.t&&a[1]!==z.status&&z.status==='zurückgezogen'))toast('Auftrag von der Zentrale zurückgezogen',5000);}
     else if(ansicht==='gis'&&z&&a&&a[0]===z.a.t){
       if(a[1]!==z.status)toast(`Fahrzeug ${c}: ${z.status}${z.status==='quittiert'&&z.a.routen.length>1?' mit '+WAHL[z.wahl]:''}`,3000);
+      else if(z.fahrt&&a[3]!==z.fahrt.t)toast(`Fahrzeug ${c}: Route neu berechnet (${GRUND[z.fahrt.grund]||'neu'})`,3500);
       else if(a[2]!==z.wahl)toast(`Fahrzeug ${c} wählt ${WAHL[z.wahl]}`,2500);}}
   if(map&&map.getLayer('netz')&&ansicht==='einsatz'){zeichnePunkte();zeichneRoute();einpassen();}
   uiRoute();});
@@ -1455,7 +1897,7 @@ function uiEinsatz(){
   engKlick(el,v);
 }
 // Umstellen Zentrale <-> Fahrzeug; merken = Wahl im Browser speichern (nur bei Klick)
-function setAnsicht(a,merken){ansicht=a;const e=a==='einsatz';$('.app').dataset.ansicht=a;
+function setAnsicht(a,merken){ansicht=a;const e=a==='einsatz';$('.app').dataset.ansicht=a;if(!e&&FAHRT)faStop(true);
   if(e)split=false;
   ['zen','route','seg','lay','info'].forEach(x=>$('#p-'+x).hidden=true);$('#p-einsatz').hidden=!e;
   ortWahl=null;
@@ -1699,6 +2141,7 @@ function zeigeSeg(i,still){
     <h2 style="margin-top:4px">${esc(a('name')||'Strasse ohne Namen')}</h2>
     <p class="muted small" style="margin-top:2px">${esc(a('gemeinde')||'')} · ${Math.round(L)} m${a('ausserhalb')?' · ausserhalb des Untersuchungsgebiets (nur Randpuffer)':''}</p>
     <h3 style="margin-top:14px;margin-bottom:4px">Befund je Fahrzeugklasse</h3><table class="pr">${rows}</table>
+    ${MELD.filter(m=>m.f===i&&meldGilt(m)).map(m=>`<p class="small" style="margin-top:6px"><b>⛔ ${meldFuer(m)}</b> nach Meldung von Fahrzeug ${m.c} (${zeitTxt(m.t)} Uhr), von der Zentrale bestätigt. Gilt nur zur Laufzeit in diesem Browser, nicht in QGIS; Befund oben ohne Meldung.</p>`).join('')}
     <h3 style="margin-top:14px;margin-bottom:4px">Gemessene Breite (amtliche Vermessung)</h3>
     <table class="kv"><tr><td>Fahrbahn Median</td><td>${m(a('v9_fahrbahn_median_m'))}</td></tr>
       <tr><td>Freie Breite sicher (untere Schranke)</td><td>${m(a('v9_untere_schranke_m'))}</td></tr>
@@ -1741,7 +2184,7 @@ let splitStart=false;
   else if(a!=='einsatz'&&a!=='gis'&&a!=='beides'){try{a=localStorage.getItem('bors-ansicht');}catch(_){}}
   if(a==='beides'){a='gis';splitStart=true;}
   if(a==='einsatz'){ansicht='einsatz';$('.app').dataset.ansicht='einsatz';}})();
-start().then(()=>{if(D){wachenUI();profTab();laden();setAnsicht(ansicht);if(splitStart)setSplit(true);hinweis();bauStart();}});
+start().then(()=>{if(D){wachenUI();profTab();laden();posLaden();meldLaden();meldAnwenden();setInterval(faPuls,1000);setAnsicht(ansicht);if(splitStart)setSplit(true);hinweis();bauStart();}});
 })();
 </script>
 
