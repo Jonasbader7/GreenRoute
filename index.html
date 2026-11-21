@@ -1827,7 +1827,7 @@ function faUI(force){const el=$('#f-fahrt');if(!el)return;const z=fzAuftrag();if
     ${F.meld?`<div class="e-sub" style="font-weight:600">Was ist vor dem Fahrzeug?</div><div class="fa-ms"><button class="btn warnb" id="fa-m-g">Strasse gesperrt<br><small>gilt für alle</small></button><button class="btn warnb" id="fa-m-e">Zu eng oder zu tief für ${F.c}<br><small>gilt für ${KL_AB(F.c).join(', ')}</small></button></div><button class="btn" id="fa-m-x">Abbrechen</button>`
       :`<div class="e-row">${F.quelle==='sim'&&!F.ziel?`<button class="btn" id="fa-ab" ${F.ab||F.warte?'disabled':''}>${F.ab?'Biegt gleich ab …':'↪ Abweichung simulieren'}</button>`:''}<button class="btn fa-hm" id="fa-hm" ${F.p&&!F.warte?'':'disabled'}>⚠ Hindernis melden</button></div>`}
     ${F.folgen?'':'<button class="btn" id="fa-folgen">Karte folgt dem Fahrzeug</button>'}</div>`;
-  if(eig.length)h+=`<div class="e-note">${eig.map(m=>`Meldung ${esc(m.name)}: ${m.status==='offen'?'die Zentrale prüft, bis dahin gilt sie nur für dieses Fahrzeug':m.status==='bestaetigt'?'von der Zentrale bestätigt, gilt für alle':m.status==='verworfen'?'von der Zentrale nicht übernommen, gilt nur für dieses Fahrzeug':'aufgehoben'}.`).join('<br>')}</div>`;
+  if(eig.length)h+=`<div class="e-note">${eig.map(m=>`Meldung ${esc(m.name)}: ${m.status==='offen'?'die Zentrale prüft, bis dahin gilt sie nur für dieses Fahrzeug':m.status==='bestaetigt'?`von der Zentrale bestätigt, gilt für ${m.kl.includes('REF')?'alle':m.kl.join(', ')}`:m.status==='verworfen'?'von der Zentrale nicht übernommen, gilt nur für dieses Fahrzeug':'aufgehoben'}.`).join('<br>')}</div>`;
   el.innerHTML=h;faTxt(z,F);
   const on=(s,f)=>{const b=el.querySelector(s);if(b)b.onclick=f;};
   on('#fa-sim',()=>faStart('sim'));on('#fa-gps',()=>faStart('gps'));on('#fa-stop',()=>faStop());
@@ -1854,7 +1854,7 @@ addEventListener('storage',e=>{if(!D)return;
   if(e.key===MELD_KEY){const alt=new Map(MELD.map(m=>[m.id,m.status]));meldLaden();
     for(const m of MELD){const a=alt.get(m.id);
       if(a===undefined&&m.status==='offen'&&ansicht==='gis')toast(`Meldung von Fahrzeug ${m.c}: ${m.name} – ${m.art==='gesperrt'?'Strasse gesperrt':'zu eng oder zu tief'}. Bitte im Tab «Einsatz» prüfen.`,6000);
-      else if(a&&a!==m.status&&ansicht==='einsatz'&&m.c===profil)toast(m.status==='bestaetigt'?`Die Zentrale hat die Meldung ${m.name} bestätigt: Sie gilt jetzt für alle.`:m.status==='verworfen'?`Die Zentrale übernimmt die Meldung ${m.name} nicht für andere. Für dieses Fahrzeug bleibt sie gemieden.`:`Sperre ${m.name} aufgehoben.`,5000);}
+      else if(a&&a!==m.status&&ansicht==='einsatz'&&m.c===profil)toast(m.status==='bestaetigt'?`Die Zentrale hat die Meldung ${m.name} bestätigt: ${meldFuer(m)}.`:m.status==='verworfen'?`Die Zentrale übernimmt die Meldung ${m.name} nicht für andere. Für dieses Fahrzeug bleibt sie gemieden.`:`Sperre ${m.name} aufgehoben.`,5000);}
     meldAnwenden();uiRoute();}
   else if(e.key===POS_KEY){posLaden();fzMarker();}});
 
