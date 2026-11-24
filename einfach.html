@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GreenRoute einfach – Welcher Weg passt für welches Fahrzeug?</title>
+<meta name="description" content="GreenRoute einfach: zeigt, welcher Weg für welches Blaulicht-Fahrzeug in Bern passt. Studierenden-Prototyp (BFH), nicht für echte Einsätze.">
+<meta name="theme-color" content="#173b31">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GreenRoute einfach – Welcher Weg passt für welches Blaulicht-Fahrzeug?">
+<meta property="og:description" content="Fahrzeug wählen, Ziel in Bern antippen, sehen, ob es durchpasst. Studierenden-Prototyp der BFH.">
+<meta property="og:url" content="https://jonasbader7.github.io/GreenRoute/einfach.html">
+<meta property="og:image" content="https://jonasbader7.github.io/Portfoliopage/img/greenroute-s1-liebewil.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='16' fill='%23173b31'/%3E%3Cpath d='M17 47C27 44 27 36 33 33S41 24 46 18' fill='none' stroke='%233ee08a' stroke-opacity='.35' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='17' cy='47' r='5' fill='%236f8c80'/%3E%3Ccircle cx='33' cy='33' r='5' fill='%2322b06a'/%3E%3Ccircle cx='46' cy='18' r='7' fill='%233ee08a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.css">
+<style>
+/* GreenRoute einfach (V21): eine Seite, drei Schritte. Gleicher Router und gleiches Netz wie die ausführliche Version. */
+:root{
+  --bg:#f3f5f4; --panel:#fff; --ink:#15211e; --muted:#5b6865; --line:#d9dfdd; --soft:#eef2f0;
+  --brand:#3ee08a; --brand-dark:#12784a; --tile:#173b31;
+  --ok:#1e9e57; --ok-bg:#e2f5e9; --warn:#c98a00; --warn-line:#f2b705; --warn-bg:#fff3cf; --bad:#d23a4b; --bad-bg:#fde6e8;
+  --vgl:#59646a;
+  --f:"Source Sans 3","Segoe UI",Helvetica,Arial,sans-serif; --f-brand:"Montserrat","Arial Black",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--f);color:var(--ink);background:var(--bg);font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--brand-dark)}
+
+/* Kopf */
+.top{display:flex;align-items:center;gap:12px;padding:10px 18px;background:var(--tile);color:#fff;min-height:60px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+.logo svg{width:36px;height:36px;flex:none}
+.logo b{font-family:var(--f-brand);font-size:22px;letter-spacing:-.01em}
+.top .claim{font-size:16px;opacity:.88;margin-left:6px}
+.top .badge{margin-left:auto;font-size:13px;font-weight:700;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:99px;white-space:nowrap}
+
+/* Aufbau: links die Schritte, rechts die Karte */
+.app{display:grid;grid-template-columns:430px 1fr;height:calc(100vh - 60px);height:calc(100dvh - 60px)}
+.panel{overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:18px 20px 30px}
+.kartebox{position:relative;min-height:0}
+#map{position:absolute;inset:0;background:#ecebe6}
+
+.step{margin-bottom:22px}
+.step h2{display:flex;align-items:center;gap:10px;font-size:20px;margin:0 0 10px}
+.nr{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--tile);color:#fff;font-size:16px;flex:none}
+.hint{margin:0 0 10px;color:var(--muted)}
+
+/* Schritt 1: Fahrzeuge */
+.fz-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fz{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:2px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;min-height:44px}
+.fz svg{width:100%;max-width:150px;height:44px}
+.fz b{font-size:17px;line-height:1.2}
+.fz small{color:var(--muted);font-size:14px}
+.fz:hover{border-color:#9fb1ab}
+.fz[aria-pressed="true"]{border-color:var(--brand-dark);background:var(--ok-bg);box-shadow:0 0 0 2px var(--brand-dark) inset}
+
+/* Schritt 2: Ziel */
+.such{display:flex;gap:8px}
+.such input{flex:1;min-width:0;font:inherit;padding:10px 12px;border:2px solid var(--line);border-radius:10px;min-height:46px}
+.such input:focus{outline:none;border-color:var(--brand-dark)}
+.btn{border:2px solid var(--tile);background:var(--tile);color:#fff;border-radius:10px;padding:8px 16px;font-weight:700;min-height:46px}
+.btn.hell{background:#fff;color:var(--tile)}
+.treffer{margin-top:6px}
+.treffer button{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 12px;margin-top:6px;min-height:44px}
+.treffer p{margin:6px 0 0;color:var(--muted);font-size:15px}
+.start{margin:12px 0 0;font-size:15px;color:var(--muted)}
+.start b{color:var(--ink)}
+.link{border:none;background:none;padding:6px 2px;color:var(--brand-dark);text-decoration:underline;font-weight:600;min-height:32px}
+.bsp{margin-top:14px}
+.bsp p{margin:0 0 6px;font-size:15px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:99px;padding:6px 14px;font-weight:600;font-size:15px;min-height:44px}
+.chip[aria-pressed="true"]{border-color:var(--brand-dark);background:var(--ok-bg)}
+
+/* Schritt 3: Ergebnis */
+.leer{color:var(--muted);margin:0}
+.bsp-text{background:var(--soft);border-radius:12px;padding:10px 14px;margin:0 0 12px;font-size:16px}
+.status{display:flex;gap:12px;align-items:flex-start;border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.status .ico{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px}
+.status b{display:block;font-size:20px;line-height:1.2;margin-bottom:2px}
+.status.ok{background:var(--ok-bg)} .status.ok .ico{background:var(--ok)}
+.status.warn{background:var(--warn-bg)} .status.warn .ico{background:var(--warn)}
+.status.bad{background:var(--bad-bg)} .status.bad .ico{background:var(--bad)}
+.zeit{font-size:16px;margin:0 0 12px}
+.zeit b{font-size:30px;margin-right:4px}
+.zeit span{color:var(--muted)}
+.box{border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 12px;font-size:16px}
+.box p{margin:0}
+.box ul{margin:6px 0 0;padding-left:20px}
+.box li{margin:2px 0}
+.box.vgl{border-left:5px solid var(--vgl)}
+.box.gelb{border-left:5px solid var(--warn-line)}
+.box.kurve{border-left:5px solid var(--warn)}
+h3{font-size:17px;margin:16px 0 8px}
+.alle{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.alle li+li{border-top:1px solid var(--line)}
+.alle button{display:grid;grid-template-columns:62px 1fr auto;align-items:center;gap:10px;width:100%;border:none;background:#fff;padding:8px 12px;text-align:left;min-height:52px}
+.alle button[aria-pressed="true"]{background:var(--ok-bg)}
+.alle svg{width:62px;height:28px}
+.alle .w{text-align:right;white-space:nowrap;font-weight:700}
+.pkt{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.pkt.ok{background:var(--ok)} .pkt.warn{background:var(--warn-line)} .pkt.bad{background:var(--bad)}
+.alle small{color:var(--muted);font-weight:400;font-size:14px}
+
+details.wie{border-top:1px solid var(--line);padding-top:14px;margin-top:8px}
+details.wie summary{font-weight:700;font-size:18px;cursor:pointer;min-height:36px}
+.drei{list-style:none;margin:10px 0;padding:0;counter-reset:d}
+.drei li{position:relative;padding-left:40px;margin:0 0 12px}
+.drei li::before{counter-increment:d;content:counter(d);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:700}
+.fuss{font-size:14px;color:var(--muted);margin-top:16px}
+
+/* Karte: Ergebnis-Band, Legende, Laden */
+.banner{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:3;background:#fff;border-radius:99px;padding:8px 18px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.18);display:flex;gap:8px;align-items:center;white-space:nowrap;font-size:17px;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+.banner[hidden]{display:none}
+.banner .ico{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:14px;flex:none}
+.banner.ok .ico{background:var(--ok)} .banner.warn .ico{background:var(--warn)} .banner.bad .ico{background:var(--bad)} .banner.info .ico{background:var(--tile)}
+.legende{position:absolute;left:12px;bottom:28px;z-index:3;background:rgba(255,255,255,.96);border-radius:12px;padding:10px 12px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:260px}
+.legende div[hidden]{display:none}
+.legende div{display:flex;align-items:center;gap:8px;margin:3px 0}
+.legende i{display:inline-block;width:30px;height:6px;border-radius:3px;flex:none}
+.legende i.gr{background:var(--ok)} .legende i.ge{background:var(--warn-line)} .legende i.gra{background:repeating-linear-gradient(90deg,var(--vgl) 0 7px,transparent 7px 11px);height:4px}
+.legende i.rot{background:var(--bad)}
+.legende .x{width:30px;text-align:center;color:#fff;flex:none}
+.legende .x span{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--bad);font-size:11px;font-weight:800}
+.legende label{display:flex;gap:8px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid var(--line);cursor:pointer;min-height:32px}
+.legende input{width:18px;height:18px;accent-color:var(--brand-dark)}
+.legende .netzleg{display:none;padding-left:4px}
+.legende.netz .netzleg{display:block}
+#lade{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:rgba(243,245,244,.86);text-align:center;padding:20px}
+#lade[hidden]{display:none}
+#lade .spin{width:40px;height:40px;border:4px solid var(--line);border-top-color:var(--brand-dark);border-radius:50%;margin:0 auto 12px;animation:dreh 1s linear infinite}
+@keyframes dreh{to{transform:rotate(360deg)}}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;z-index:20;max-width:90vw;font-size:16px}
+#toast[hidden]{display:none}
+
+/* Marker */
+.mk{color:#fff;font-weight:700;font-size:14px;line-height:1;padding:6px 10px;border-radius:99px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);margin-bottom:8px;white-space:nowrap}
+.mk::after{content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);border:6px solid transparent;border-top-color:inherit;border-top:8px solid;border-top-color:var(--c)}
+.mk.s{background:var(--tile);--c:var(--tile)} .mk.z{background:var(--bad);--c:var(--bad)}
+.kreuz{width:26px;height:26px;border-radius:50%;background:var(--bad);color:#fff;display:grid;place-items:center;font-weight:800;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35);font-size:14px;cursor:default}
+.maplibregl-ctrl-attrib{font-size:11px}
+
+/* Handy: Karte oben, Schritte darunter */
+@media (max-width:820px){
+  body{font-size:16px}
+  .top{padding:8px 12px;min-height:52px}.top .claim{display:none}.logo b{font-size:19px}.logo svg{width:30px;height:30px}
+  .app{display:flex;flex-direction:column;height:auto}
+  .kartebox{order:1;height:55vh;height:55svh;min-height:300px;flex:none}
+  .panel{order:2;border-right:none;padding:14px 14px 30px}
+  .legende{bottom:20px;left:6px;padding:5px 8px;font-size:12px;max-width:170px;border-radius:9px}
+  .legende div{margin:1px 0;gap:6px}
+  .legende i{width:18px;height:5px}.legende .x{width:18px}.legende .x span{width:14px;height:14px;font-size:9px}
+  .legende label{margin-top:3px;padding-top:3px;min-height:28px}.legende input{width:16px;height:16px}
+  .banner{top:8px;font-size:15px;padding:6px 14px}
+  .fz svg{height:36px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="#" aria-label="GreenRoute einfach, zum Anfang">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="16" fill="#0f2a22"/><path d="M17 47C27 44 27 36 33 33S41 24 46 18" fill="none" stroke="#3ee08a" stroke-opacity=".35" stroke-width="7" stroke-linecap="round"/><circle cx="17" cy="47" r="5" fill="#6f8c80"/><circle cx="33" cy="33" r="5" fill="#22b06a"/><circle cx="46" cy="18" r="7" fill="#3ee08a"/></svg>
+    <b>GreenRoute</b>
+  </a>
+  <span class="claim">Welcher Weg passt für welches Blaulicht-Fahrzeug?</span>
+  <span class="badge">Prototyp</span>
+</header>
+
+<main class="app">
+  <section class="panel" aria-label="Bedienung">
+    <div class="step">
+      <h2><span class="nr">1</span> Welches Fahrzeug?</h2>
+      <div class="fz-grid" id="fz-grid" role="group" aria-label="Fahrzeug wählen"></div>
+    </div>
+
+    <div class="step">
+      <h2><span class="nr">2</span> Wohin?</h2>
+      <p class="hint" id="ziel-hint">Tippe auf die Karte – oder suche eine Adresse.</p>
+      <form class="such" id="such-form" autocomplete="off">
+        <input type="text" id="such-in" placeholder="z. B. Kramgasse 49, Bern" aria-label="Adresse suchen">
+        <button class="btn" type="submit">Suchen</button>
+      </form>
+      <div class="treffer" id="treffer" aria-live="polite"></div>
+      <p class="start" id="start-txt"></p>
+      <div class="bsp">
+        <p>Oder probiere ein Beispiel:</p>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+
+    <div class="step" id="ergebnis-step">
+      <h2><span class="nr">3</span> Ergebnis</h2>
+      <div id="ergebnis" aria-live="polite"><p class="leer">Wähle ein Ziel. Dann siehst du hier den Weg.</p></div>
+    </div>
+
+    <details class="wie">
+      <summary>Wie funktioniert das?</summary>
+      <ol class="drei">
+        <li><b>Wir kennen die Strassen.</b> Für jede Strasse wissen wir, wie breit sie ist, wie hoch eine Unterführung ist und wie viel eine Brücke tragen darf.</li>
+        <li><b>Wir kennen die Fahrzeuge.</b> Ein Feuerwehrauto ist viel breiter, höher und schwerer als ein normales Auto.</li>
+        <li><b>Wir suchen den passenden Weg.</b> GreenRoute nimmt nur Strassen, durch die das Fahrzeug passt. Wo die Daten nicht ganz reichen, färben wir die Strasse gelb.</li>
+      </ol>
+      <p>Blaulicht-Fahrzeuge dürfen zum Beispiel ein Fahrverbot missachten. Für sie zählt vor allem, ob sie durchpassen. Ein normales Navi weiss das nicht.</p>
+      <p>Die Minuten sind gerechnet: ohne Verkehr, ohne Ampeln. Die Baustellen der Stadt Bern sind eingerechnet.<br><small id="bau-stand"></small></p>
+      <p><small>Daten: amtliche Vermessung Kanton Bern, Tiefbauamt Stadt Bern, OpenStreetMap, swisstopo. Gebiet: Bern und 10 Nachbargemeinden.</small></p>
+    </details>
+    <p class="fuss">Studierenden-Prototyp (BFH, Gruppe 5). Nicht für echte Einsätze.<br>
+      Für Fachleute: <a href="https://jonasbader7.github.io/GreenRoute/">ausführliche Version mit Einsatzablauf</a>.</p>
+  </section>
+
+  <section class="kartebox" aria-label="Karte">
+    <div id="map"></div>
+    <div class="banner info" id="banner" hidden></div>
+    <div class="legende" id="legende">
+      <div><i class="gr"></i>Weg des Fahrzeugs</div>
+      <div><i class="ge"></i>nicht sicher geprüft</div>
+      <div id="leg-vgl" hidden><i class="gra"></i>Weg des Notarzt-Autos</div>
+      <div id="leg-x" hidden><span class="x"><span>✕</span></span>passt hier nicht durch</div>
+      <label><input type="checkbox" id="cb-netz"> Alle Strassen einfärben</label>
+      <div class="netzleg">
+        <div><i class="gr"></i>passt</div>
+        <div><i class="ge"></i>nicht sicher</div>
+        <div><i class="rot"></i>passt nicht</div>
+      </div>
+    </div>
+    <div id="lade"><div><div class="spin"></div><b id="lade-txt">Strassennetz wird geladen …</b><br><small>einmalig rund 15 MB</small></div></div>
+  </section>
+</main>
+<div id="toast" hidden role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"></script>
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const UML=[['Hoechst','Höchst'],['hoechst','höchst'],['Hoehe','Höhe'],['hoehe','höhe'],['Ueber','Über'],['ueber','über'],['fuer','für'],['ungeklaert','ungeklärt'],['Tragfaehig','Tragfähig'],['Hoehenbegrenzer','Höhenbegrenzer'],['pruefen','prüfen']];
+const de=s=>{s=String(s==null?'':s);for(const [a,b] of UML)s=s.split(a).join(b);return s;};
+const zahl=x=>(+x).toLocaleString('de-CH',{maximumFractionDigits:(+x)>=10?1:2});
+
+// Fahrzeuge in Alltagssprache (Klassen A–D wie im Netzmaster)
+const FZ=['A','B','C','D'];
+const NAME={A:'Notarzt-Auto',B:'Krankenwagen',C:'Feuerwehrauto',D:'Grosses Feuerwehrauto'};
+const DER={A:'Das Notarzt-Auto',B:'Der Krankenwagen',C:'Das Feuerwehrauto',D:'Das grosse Feuerwehrauto'};
+const der=c=>DER[c][0].toLowerCase()+DER[c].slice(1);
+const ICON={
+  A:`<svg viewBox="0 0 150 44" aria-hidden="true"><path d="M8 28h62v-8l-8-2-8-9H28l-10 9-8 2z" fill="#f6f8f7" stroke="#24302d" stroke-width="2.4" stroke-linejoin="round"/><path d="M8 24h62" stroke="#f2c200" stroke-width="4"/><rect x="34" y="4" width="10" height="5" rx="2" fill="#2f6fe0"/><circle cx="22" cy="31" r="6" fill="#24302d"/><circle cx="57" cy="31" r="6" fill="#24302d"/></svg>`,
+  B:`<svg viewBox="0 0 150 44" aria-hidden="true"><path d="M6 32V8h60v24z" fill="#f6f8f7" stroke="#24302d" stroke-width="2.4" stroke-linejoin="round"/><path d="M66 14h14l9 9v9H66z" fill="#f6f8f7" stroke="#24302d" stroke-width="2.4" stroke-linejoin="round"/><path d="M6 25h83" stroke="#f2c200" stroke-width="4"/><path d="M33 12v10M28 17h10" stroke="#d23a4b" stroke-width="4"/><rect x="10" y="3" width="10" height="5" rx="2" fill="#2f6fe0"/><circle cx="20" cy="34" r="6" fill="#24302d"/><circle cx="74" cy="34" r="6" fill="#24302d"/></svg>`,
+  C:`<svg viewBox="0 0 150 44" aria-hidden="true"><path d="M5 34V12h76v22z" fill="#d23a4b" stroke="#24302d" stroke-width="2.4" stroke-linejoin="round"/><path d="M81 14h17l10 10v10H81z" fill="#d23a4b" stroke="#24302d" stroke-width="2.4" stroke-linejoin="round"/><path d="M8 8h68M14 8v4M30 8v4M46 8v4M62 8v4" stroke="#8a9592" stroke-width="2.4"/><rect x="86" y="18" width="10" height="7" rx="1" fill="#e8eeec"/><path d="M5 27h103" stroke="#fff" stroke-width="2.4"/><circle cx="22" cy="36" r="6.5" fill="#24302d"/><circle cx="92" cy="36" r="6.5" fill="#24302d"/></svg>`,
+  D:`<svg viewBox="0 0 150 44" aria-hidden="true"><path d="M4 35V9h106v26z" fill="#d23a4b" stroke="#24302d" stroke-width="2.4" stroke-linejoin="round"/><path d="M110 11h20l14 12v12h-34z" fill="#d23a4b" stroke="#24302d" stroke-width="2.4" stroke-linejoin="round"/><path d="M8 5h96M16 5v4M34 5v4M52 5v4M70 5v4M88 5v4" stroke="#8a9592" stroke-width="2.4"/><rect x="116" y="15" width="12" height="8" rx="1" fill="#e8eeec"/><path d="M4 28h140" stroke="#fff" stroke-width="2.4"/><circle cx="20" cy="37" r="6.5" fill="#24302d"/><circle cx="36" cy="37" r="6.5" fill="#24302d"/><circle cx="122" cy="37" r="6.5" fill="#24302d"/></svg>`};
+
+// Start: Berufsfeuerwehr Bern, Murtenstrasse 98 (amtlicher Adresspunkt, wie V17–V20)
+const WACHE={n:'Feuerwache Murtenstrasse',p:[2598307.75,1200148.75]};
+// Beispiele wie V15–V20 (S1–S4), Texte in Alltagssprache
+const BSP=[
+  {id:'s1',t:'Zu hoch',c:'D',s:[2597177,1194109],z:[2593852,1194776],
+   txt:'Die Unterführung in Liebewil (Köniz) ist nur 3.50 m hoch. Das grosse Feuerwehrauto ist 3.66 m hoch. Es passt nicht durch und fährt einen Umweg.'},
+  {id:'s2',t:'Zu schwer',c:'C',s:[2602092,1203136],z:[2600060,1201156],
+   txt:'Die Brücke an der Reichenbachstrasse trägt nur 15 Tonnen. Das Feuerwehrauto wiegt 17 Tonnen. Es nimmt deshalb einen anderen Weg.'},
+  {id:'s3',t:'Zu schmal',c:'D',s:[2601199,1205630],z:[2598652,1204099],
+   txt:'Die Mittelstrasse in Kirchlindach ist eine Abkürzung, aber nur etwa 2.9 m breit. Das kleine Notarzt-Auto passt durch. Für das grosse Feuerwehrauto mit Spiegeln ist es zu eng.'},
+  {id:'s4',t:'Zu enge Kurve',c:'D',s:[2601184,1205344],z:[2601161,1204367],
+   txt:'In Zollikofen muss man sehr spitz in die Aarestrasse abbiegen. Das grosse Feuerwehrauto kommt dort nicht um die Ecke und fährt aussen herum.'}];
+
+// LV95 <-> WGS84 (swisstopo Näherungsformeln, ca. 1 m)
+function lv2wgs(E,N){const y=(E-2600000)/1e6,x=(N-1200000)/1e6;
+  const l=2.6779094+4.728982*y+0.791484*y*x+0.1306*y*x*x-0.0436*y*y*y, p=16.9023892+3.238272*x-0.270978*y*y-0.002528*x*x-0.0447*y*y*x-0.0140*x*x*x;
+  return [l*100/36,p*100/36];}
+function wgs2lv(lon,lat){const p=(lat*3600-169028.66)/10000,l=(lon*3600-26782.5)/10000;
+  return [2600072.37+211455.93*l-10938.51*l*p-0.36*l*p*p-44.54*l*l*l, 1200147.07+308807.95*p+3745.25*l*l+76.63*p*p-194.56*l*l*p+119.79*p*p*p];}
+
+let D=null,X0=0,Y0=0,map=null,kartebereit=false,worker=null,fz='D';
+let P1=WACHE.p.slice(),P1txt=WACHE.n,P2=null,P2txt='',startWahl=false,RES=null,rechnet=false,rid=0,bspAkt=null,kreuze=[],mkS=null,mkZ=null;
+const rel2wgs=(x,y)=>lv2wgs(x+X0,y+Y0);
+
+function toast(t,ms){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,ms||3200);}
+
+// ------------------------------------------------ Daten laden
+async function laden(){
+  let txt;
+  try{const r=await fetch('netz.json');if(!r.ok)throw new Error('HTTP '+r.status);
+    if(r.body&&window.TextDecoder){const rd=r.body.getReader(),dec=new TextDecoder();let n=0;const teile=[];let t0=Date.now();
+      for(;;){const {done,value}=await rd.read();if(done)break;n+=value.length;teile.push(dec.decode(value,{stream:true}));
+        if(Date.now()-t0>300){t0=Date.now();$('#lade-txt').textContent=`Strassennetz wird geladen … ${Math.min(99,Math.round(n/153000))} %`;}}
+      teile.push(dec.decode());txt=teile.join('');}
+    else txt=await r.text();}
+  catch(e){$('#lade-txt').textContent='Das Strassennetz konnte nicht geladen werden. Bitte die Seite neu laden.';return;}
+  $('#lade-txt').textContent='Fast fertig …';
+  await new Promise(r=>setTimeout(r,20));
+  D=JSON.parse(txt);X0=D.x0;Y0=D.y0;
+  startWorker(txt);
+  fzKacheln();uiStart();
+  $('#lade').hidden=true;
+  zeichnePunkte();
+  bauStart();
+  const b=BSP.find(x=>'#'+x.id===location.hash.toLowerCase());if(b)beispiel(b);
+  // wie V20: ?start=E,N&ziel=E,N (LV95) und ?fz=A|B|C|D
+  const q=new URLSearchParams(location.search),pt=k=>{const v=(q.get(k)||'').split(',').map(Number);return v.length===2&&v.every(Number.isFinite)?v:null;};
+  if(!b){const fq=(q.get('fz')||'').toUpperCase();if(FZ.includes(fq))setFz(fq);
+    const s0=pt('start'),z0=pt('ziel');if(s0){P1=s0;P1txt=ortName(...s0);}if(z0){P2=z0;P2txt=ortName(...z0);}
+    if(s0||z0){uiStart();zeichnePunkte();if(P1&&P2)rechne();}}
+}
+
+// ------------------------------------------------ Baustellen Stadt Bern live (Kern unverändert aus V14–V20)
+const BAU_K={BREITE:{A:2.20,B:2.45,C:2.90,D:3.00},RES:0.25,F_BAU:1.5,F_ENG:2.0,MIN_M:5.0,G:50};
+function bauFaktor(rb,c){return rb==null?BAU_K.F_BAU:(rb<BAU_K.BREITE[c]+2*BAU_K.RES?BAU_K.F_ENG:BAU_K.F_BAU);}
+function bauMinRb(eintraege){const m=new Map();for(const b of eintraege){const f=b[0];if(!m.has(f)||(b[1]!=null&&(m.get(f)==null||b[1]<m.get(f))))m.set(f,b[1]);}return m;}
+function bauAnwenden(D,alt,neu,O){
+  for(const f of new Set([...alt.keys(),...neu.keys()]))for(const c of ['A','B','C','D']){
+    const fa=alt.has(f)?bauFaktor(alt.get(f),c):1,fn=neu.has(f)?bauFaktor(neu.get(f),c):1;if(fa===fn)continue;const r=fn/fa;
+    for(const m of ['V','E']){const k=D.kosten[m][c][f];if(k)D.kosten[m][c][f]=k*r;}
+    if(O&&O.has(f)){const s=JSON.parse(O.get(f));s.forEach(l=>l.forEach(e=>{if(e[0]===c&&e[1])e[1]=e[1]*r;}));O.set(f,JSON.stringify(s));}}}
+function bauGitter(D){const G=BAU_K.G,g=new Map(),N=D.nodes;
+  D.segs.forEach((s,f)=>s[0].forEach(ids=>{for(let k=0;k<ids.length-1;k++){const x1=N[2*ids[k]]/100,y1=N[2*ids[k]+1]/100,x2=N[2*ids[k+1]]/100,y2=N[2*ids[k+1]+1]/100;
+    for(const t of [0,0.5,1]){const key=Math.floor((x1+t*(x2-x1))/G)+','+Math.floor((y1+t*(y2-y1))/G);let z=g.get(key);if(!z)g.set(key,z=new Set());z.add(f);}}}));return g;}
+function bauInPoly(x,y,polys){for(const rings of polys){let ins=false;for(const r of rings)for(let i=0;i<r.length-1;i++){const [x1,y1]=r[i],[x2,y2]=r[i+1];
+    if((y1>y)!==(y2>y)&&x<(x2-x1)*(y-y1)/(y2-y1)+x1)ins=!ins;}if(ins)return true;}return false;}
+function bauRand(x,y,polys){let b=1e9;for(const rings of polys)for(const r of rings)for(let i=0;i<r.length-1;i++){const [ax,ay]=r[i],[bx,by]=r[i+1],dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
+    const t=l2?Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/l2)):0;b=Math.min(b,Math.hypot(x-ax-t*dx,y-ay-t*dy));}return b;}
+function bauBetroffen(D,grid,polys){const G=BAU_K.G,N=D.nodes;let x0=1e18,y0=1e18,x1=-1e18,y1=-1e18;
+  for(const rings of polys)for(const r of rings)for(const [x,y] of r){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+  const kand=new Set();for(let i=Math.floor(x0/G)-1;i<=Math.floor(x1/G)+1;i++)for(let j=Math.floor(y0/G)-1;j<=Math.floor(y1/G)+1;j++)(grid.get(i+','+j)||[]).forEach(f=>kand.add(f));
+  const out=[];for(const f of kand){let L=0,ges=0;for(const ids of D.segs[f][0])for(let k=0;k<ids.length-1;k++){
+      const ax=N[2*ids[k]]/100,ay=N[2*ids[k]+1]/100,bx=N[2*ids[k+1]]/100,by=N[2*ids[k+1]+1]/100,d=Math.hypot(bx-ax,by-ay),n=Math.max(1,Math.floor(d/2));ges+=d;
+      for(let q=0;q<n;q++){const t=(q+0.5)/n,x=ax+t*(bx-ax),y=ay+t*(by-ay);if(bauInPoly(x,y,polys)||bauRand(x,y,polys)<=1)L+=d/n;}}
+    if(L>=BAU_K.MIN_M||(L>0&&L>=0.5*ges))out.push(f);}
+  return out;}
+const bauIso=ms=>{if(!ms)return '';const d=new Date(ms),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`;};
+function bauStadt(D,grid,feats,jetzt){const neu=new Map(),st={aktiv:0,beendet:0,spaeter:0,mitAbschnitt:0};
+  for(const ft of feats){const p=ft.properties||{},von=bauIso(p.Startdate),bis=bauIso(p.Enddate),g=ft.geometry;
+    if(bis&&bis<jetzt){st.beendet++;continue;}if(von&&von>jetzt){st.spaeter++;continue;}
+    const roh=!g?[]:g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[];if(!roh.length)continue;st.aktiv++;
+    const polys=roh.map(rings=>rings.map(r=>r.map(c=>[c[0]-D.x0,c[1]-D.y0])));const fs=bauBetroffen(D,grid,polys);if(fs.length)st.mitAbschnitt++;
+    for(const f of fs)if(!neu.has(f))neu.set(f,[f,null,'Stadt Bern Baustellen','Polygon Stadt Bern (live)',bis.slice(0,10),'']);}
+  return {eintraege:[...neu.values()],st};}
+
+const BAU_MIN=10,BAU_KEY='bors-baustellen-live',BAU_URL='https://map.bern.ch/arcgis/rest/services/Geoportal/Baustellen_2/MapServer/';
+let BAU_STATISCH=null,BAU_ASTRA=[],BAU_AKT=null,BAU_LIVE=null,bauGrid=null,bauLaeuft=false;
+const bauJetzt=()=>bauIso(Date.now());
+function bauInit(){if(BAU_STATISCH)return;BAU_STATISCH=D.bau.slice();BAU_AKT=bauMinRb(D.bau);BAU_ASTRA=D.bau.filter(b=>!/^Stadt Bern/.test(b[2]||''));}
+function bauUebernehmen(s){bauInit();const heute=bauJetzt().slice(0,10);
+  const alle=BAU_ASTRA.filter(b=>!b[4]||b[4]>=heute).concat(s.e),neu=bauMinRb(alle);
+  const geaendert=neu.size!==BAU_AKT.size||[...neu].some(([f,rb])=>!BAU_AKT.has(f)||BAU_AKT.get(f)!==rb);
+  if(geaendert){bauAnwenden(D,BAU_AKT,neu,null);if(worker&&worker.ok)worker.postMessage({typ:'bau',alt:[...BAU_AKT],neu:[...neu]});}
+  BAU_AKT=neu;D.bau=alle;BAU_LIVE=s;bauAnzeige();
+  if(geaendert&&P1&&P2&&!rechnet)rechne(true);}
+function bauAnzeige(){const el=$('#bau-stand');if(!el)return;
+  el.textContent=BAU_LIVE?`Baustellen: Stadt Bern live, abgerufen um ${BAU_LIVE.stand} Uhr (${BAU_LIVE.n} Baustellen).`
+    :BAU_LIVE===false?'Baustellen: Live-Abruf gerade nicht möglich, deshalb Stand 5.11.2026.':'Baustellen werden abgerufen …';}
+async function bauHolen(){if(bauLaeuft||!D)return;bauLaeuft=true;
+  try{bauInit();if(!bauGrid)bauGrid=bauGitter(D);
+    const q='/query?where=1%3D1&outFields=Locality,Project,Startdate,Enddate,Displaynumber,Statustxt&outSR=2056&geometryPrecision=1&f=geojson';
+    const [a,b]=await Promise.all(['2','1'].map(async l=>{const r=await fetch(BAU_URL+l+q,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!Array.isArray(j.features))throw new Error('keine Features');return j.features;}));
+    const jetzt=bauJetzt(),r=bauStadt(D,bauGrid,a.concat(b),jetzt);
+    const s={t:Date.now(),stand:jetzt.slice(11,16),n:r.st.aktiv,e:r.eintraege};
+    try{localStorage.setItem(BAU_KEY,JSON.stringify(s));}catch(_){}
+    bauUebernehmen(s);}
+  catch(e){if(!BAU_LIVE){BAU_LIVE=false;bauAnzeige();}}
+  finally{bauLaeuft=false;}}
+function bauGespeichert(){try{const s=JSON.parse(localStorage.getItem(BAU_KEY)||'null');return s&&typeof s.t==='number'&&Array.isArray(s.e)&&s.e.every(x=>Array.isArray(x)&&Number.isInteger(x[0])&&x[0]>=0&&x[0]<D.segs.length)?s:null;}catch(_){return null;}}
+function bauStart(){bauInit();bauAnzeige();const s=bauGespeichert();
+  if(s&&Date.now()-s.t<BAU_MIN*60000)bauUebernehmen(s);else bauHolen();
+  setInterval(()=>{const g=bauGespeichert(),t=g?g.t:(BAU_LIVE&&BAU_LIVE.t)||0;if(Date.now()-t>=BAU_MIN*60000)bauHolen();else if(g&&(!BAU_LIVE||g.t>BAU_LIVE.t))bauUebernehmen(g);},60000);}
+
+// ------------------------------------------------ Router (unverändert, im Hintergrund)
+const warte=new Map();let wid=0,routerMain=null;
+async function startWorker(txt){
+  try{const src=await (await fetch('bors_router.js')).text();
+    const glue=`let R=null,DW=null;const BAU_K=${JSON.stringify(BAU_K)};${bauFaktor.toString()};${bauAnwenden.toString()};
+      onmessage=e=>{const m=e.data;
+        if(m.typ==='init'){DW=JSON.parse(m.txt);R=new BORS.Router(new BORS.Netz(DW));postMessage({typ:'bereit'});}
+        else if(m.typ==='bau'){bauAnwenden(DW,new Map(m.alt),new Map(m.neu),null);}
+        else if(m.typ==='snap'){postMessage({typ:'snap',id:m.id,p:R.snap(m.p,m.d)});}
+        else if(m.typ==='route'){try{postMessage({typ:'res',id:m.id,res:{V:R.berechne(m.p1,m.p2,'VALIDIERT')}});}catch(err){postMessage({typ:'err',id:m.id,msg:String(err)});}}};`;
+    worker=new Worker(URL.createObjectURL(new Blob([src+'\n'+glue],{type:'text/javascript'})));
+    worker.onmessage=e=>{const m=e.data;
+      if(m.typ==='bereit'){worker.ok=true;
+        // Baustellen-Stand, der vor dem Start des Workers übernommen wurde, nachreichen
+        if(BAU_STATISCH&&BAU_AKT){const st=bauMinRb(BAU_STATISCH);if(st.size!==BAU_AKT.size||[...BAU_AKT].some(([f,rb])=>!st.has(f)||st.get(f)!==rb))worker.postMessage({typ:'bau',alt:[...st],neu:[...BAU_AKT]});}
+        return;}
+      const f=warte.get(m.id);if(!f)return;warte.delete(m.id);
+      if(m.typ==='err'){toast('Fehler im Router: '+m.msg,5000);f(null);}else f(m.typ==='snap'?m.p:m.res);};
+    worker.onerror=()=>{worker=null;};
+    worker.postMessage({typ:'init',txt});
+  }catch(e){worker=null;}
+}
+async function routerLokal(){
+  if(routerMain)return routerMain;
+  if(!window.BORS)await new Promise((res,rej)=>{const s=document.createElement('script');s.src='bors_router.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  routerMain=new BORS.Router(new BORS.Netz(D));return routerMain;}
+async function frage(typ,daten){
+  for(let k=0;k<300&&worker&&!worker.ok;k++)await new Promise(r=>setTimeout(r,100));
+  if(worker&&worker.ok)return new Promise(res=>{const id=++wid;warte.set(id,res);worker.postMessage(Object.assign({typ,id},daten));});
+  const R=await routerLokal();
+  return typ==='snap'?R.snap(daten.p,daten.d):{V:R.berechne(daten.p1,daten.p2,'VALIDIERT')};}
+async function snap(E,N){const r=await frage('snap',{p:[E-X0,N-Y0],d:150});return r?[r[0]+X0,r[1]+Y0]:null;}
+
+// ------------------------------------------------ Karte
+const leer={type:'FeatureCollection',features:[]};
+function baueKarte(){
+  if(!window.maplibregl){$('#lade-txt').textContent='Die Karte konnte nicht geladen werden. Bitte die Seite neu laden.';return false;}
+  map=new maplibregl.Map({container:'map',bounds:[[7.32,46.88],[7.56,47.02]],maxZoom:19,minZoom:9,dragRotate:false,pitchWithRotate:false,
+    attributionControl:{compact:true,customAttribution:'© swisstopo · Strassennetz © OpenStreetMap-Mitwirkende'},
+    style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#ecebe6'}}]}});
+  map.touchZoomRotate.disableRotation();
+  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+  map.on('load',()=>{
+    map.addSource('tiles',{type:'raster',tiles:['https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg'],tileSize:256,maxzoom:18});
+    map.addLayer({id:'tiles',type:'raster',source:'tiles',paint:{'raster-opacity':0.75}});
+    map.addSource('netz',{type:'geojson',data:leer});
+    map.addLayer({id:'netz',type:'line',source:'netz',layout:{'line-cap':'round',visibility:'none'},
+      paint:{'line-color':['match',['get','k'],0,'#1e9e57',1,'#f2b705','#d23a4b'],'line-width':['interpolate',['linear'],['zoom'],11,1,15,3,18,6],'line-opacity':0.8}});
+    map.addSource('vgl',{type:'geojson',data:leer});
+    map.addLayer({id:'vgl',type:'line',source:'vgl',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#59646a','line-width':['interpolate',['linear'],['zoom'],11,3,16,6],'line-dasharray':[1.6,1.4]}});
+    map.addSource('route',{type:'geojson',data:leer});
+    map.addLayer({id:'route-rand',type:'line',source:'route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#ffffff','line-width':['interpolate',['linear'],['zoom'],11,7,16,13]}});
+    map.addLayer({id:'route',type:'line',source:'route',layout:{'line-cap':'round','line-join':'round'},
+      paint:{'line-color':['match',['get','k'],0,'#1e9e57','#f2b705'],'line-width':['interpolate',['linear'],['zoom'],11,4.5,16,8]}});
+    map.addSource('fuss',{type:'geojson',data:leer});
+    map.addLayer({id:'fuss',type:'line',source:'fuss',paint:{'line-color':'#15211e','line-width':2.5,'line-dasharray':[0.6,1.6]}});
+    kartebereit=true;zeichnePunkte();zeichneRoute();if(RES&&RES.V)einpassen();
+  });
+  map.on('click',klick);
+  return true;
+}
+function netzGeo(){const F=[],n=D.nodes,kV=D.kosten.V,kE=D.kosten.E;
+  D.segs.forEach((s,i)=>{const lines=s[0].map(ids=>ids.map(j=>rel2wgs(n[2*j]/100,n[2*j+1]/100)));
+    const pr={};for(const c of FZ)pr[c]=kV[c][i]>0?0:(kE[c][i]>0?1:2);
+    F.push({type:'Feature',properties:pr,geometry:lines.length===1?{type:'LineString',coordinates:lines[0]}:{type:'MultiLineString',coordinates:lines}});});
+  return {type:'FeatureCollection',features:F};}
+let netzDaten=null;
+function netzZeigen(){if(!kartebereit||!D)return;const an=$('#cb-netz').checked;$('#legende').classList.toggle('netz',an);
+  if(an&&!netzDaten){netzDaten=netzGeo();map.getSource('netz').setData(netzDaten);}
+  map.setPaintProperty('netz','line-color',['match',['get',fz],0,'#1e9e57',1,'#f2b705','#d23a4b']);
+  map.setLayoutProperty('netz','visibility',an?'visible':'none');}
+
+function marker(cls,txt){const d=document.createElement('div');d.className='mk '+cls;d.textContent=txt;return d;}
+function zeichnePunkte(){if(!map)return;
+  if(mkS){mkS.remove();mkS=null;}if(mkZ){mkZ.remove();mkZ=null;}
+  if(P1){mkS=new maplibregl.Marker({element:marker('s','Start'),anchor:'bottom'}).setLngLat(lv2wgs(...P1)).addTo(map);mkS.getElement().title='Start: '+P1txt;}
+  if(P2){mkZ=new maplibregl.Marker({element:marker('z','Ziel'),anchor:'bottom'}).setLngLat(lv2wgs(...P2)).addTo(map);mkZ.getElement().title='Ziel: '+P2txt;}}
+
+async function klick(e){
+  if(!D){toast('Einen Moment – das Strassennetz lädt noch.');return;}
+  const [E,N]=wgs2lv(e.lngLat.lng,e.lngLat.lat);
+  const s=await snap(E,N);
+  if(!s){toast('Hier ist keine Strasse in der Nähe. Tippe näher an eine Strasse (Gebiet: Bern und 10 Nachbargemeinden).',4000);return;}
+  bspAkt=null;
+  if(startWahl){startWahl=false;P1=s;P1txt=ortName(...s);}
+  else{P2=s;P2txt=ortName(...s);$('#treffer').innerHTML='';}
+  uiStart();zeichnePunkte();rechne();
+}
+function ortName(E,N){const p=[E-X0,N-Y0],ni=D.attr_cols.indexOf('name');let best=null,bd=1e18;
+  for(let i=0;i<D.segs.length;i++){if(!D.attr[i][ni])continue;const ids=D.segs[i][0][0];
+    for(let k=0;k<ids.length;k+=Math.max(1,Math.floor(ids.length/4))){const j=ids[k],dx=D.nodes[2*j]/100-p[0],dy=D.nodes[2*j+1]/100-p[1],d=dx*dx+dy*dy;if(d<bd){bd=d;best=D.attr[i][ni];}}}
+  return best&&bd<250*250?best:'Punkt auf der Karte';}
+
+// ------------------------------------------------ Rechnen
+async function rechne(still){
+  if(!P1||!P2)return;
+  const id=++rid;rechnet=true;
+  if(!still){RES=null;zeichneRoute();ui();}
+  if(Math.hypot(P1[0]-P2[0],P1[1]-P2[1])<5){rechnet=false;RES={gleich:true};zeichneRoute();ui();return;}
+  let res=null;
+  try{res=await frage('route',{p1:[P1[0]-X0,P1[1]-Y0],p2:[P2[0]-X0,P2[1]-Y0]});}catch(e){toast('Fehler im Router: '+e,5000);}
+  if(id!==rid)return;
+  rechnet=false;RES=res;zeichneRoute();ui();if(!still)einpassen();
+}
+
+const mitte=p=>p.length===2?[(p[0][0]+p[1][0])/2,(p[0][1]+p[1][1])/2]:p[Math.floor(p.length/2)];
+const kurveHart=r=>((r&&r.abbiegen)||[]).some(t=>/UNMOEGLICH/.test(t));
+
+// Ergebnis eines Fahrzeugs in drei einfache Stufen übersetzen (Router-Ergebnis bleibt unverändert)
+function bewerte(r){
+  if(!r||!r.ok)return {s:'bad'};
+  if(r.rows.some(x=>x.kat===2))return {s:'bad',fehler:true};   // Schutz: gesperrte Strassen nie anbieten
+  const unv=r.unvalidiert_m||0,d=r.diag||{};
+  // Start oder Ziel liegt an einer Strasse, die für das Fahrzeug gesperrt oder ungeklärt ist: Halt in der Nähe (wie V20 «bis Zufahrt»)
+  if(d.ziel_status==='ZIEL_NICHT_ANFAHRBAR'||d.start_status==='START_NICHT_ANFAHRBAR')return {s:'warn',halt:true,unv,zm:Math.round(d.ziel_rest_m||0),sm:Math.round(d.start_rest_m||0)};
+  if(unv<0.5)return {s:'ok'};
+  if(r.modus==='VALIDIERT_BIS_ZUFAHRT')return {s:'warn',zufahrt:true,unv};
+  return {s:'warn',unv};}
+
+// Kurzer Grund, warum ein Fahrzeug eine Strasse nicht nehmen darf
+function sperrEinfach(c,f){const t=String(D.texte[D.grund[c][f]]||'').replace(/^Kat\. \d:\s*/,'').split(' | ');
+  const hart=t.filter(p=>/^(Gewicht|Hoehe|Breite|Hindernis):/.test(p)),amtl=hart.filter(p=>/Tiefbau Stadt Bern|Hinderniskartei/.test(p));
+  const p=amtl[0]||hart[0]||'';let m;
+  const P=D.profile[c];
+  if(/^Gewicht/.test(p)){m=p.match(/([\d.]+)\s*t\s*</);return m?`erlaubt nur ${zahl(m[1])} t (Fahrzeug ${zahl(P.t)} t)`:'zu schwer';}
+  if(/^Hoehe/.test(p)){m=p.match(/([\d.]+)\s*m\s*</);return m?`nur ${zahl(m[1])} m hoch (Fahrzeug ${zahl(P.h)} m)`:'zu niedrig';}
+  if(/^Breite/.test(p)){m=p.match(/([\d.]+)\s*m\s*</);return m?`nur ${zahl(m[1])} m breit`:'zu schmal';}
+  if(/^Hindernis/.test(p))return de(p.replace(/^Hindernis:\s*/,'')).slice(0,60);
+  return 'passt nicht durch';}
+// Kurzer Grund für gelbe Strassen
+function unsicherEinfach(c,f){const t=String(D.texte[D.grund[c][f]]||'').replace(/^Kat\. \d:\s*/,'').split(' | ').filter(p=>!/^(Hinweis|nach Befund)/.test(p));
+  const p=t[0]||'';
+  if(/^Breite/.test(p))return 'Breite nicht sicher';
+  if(/^Hoehe/.test(p))return 'Höhe nicht sicher';
+  if(/^Gewicht/.test(p))return 'Tragkraft nicht sicher';
+  if(/Hindernis|Poller/.test(p))return 'Poller oder Hindernis';
+  if(/Kurve|Abbieg/.test(p))return 'Kurve nicht sicher';
+  return 'nicht geprüft';}
+const strName=f=>D.attr[f][D.attr_cols.indexOf('name')]||'Strasse ohne Namen';
+
+// Vergleich mit dem kleinsten Fahrzeug (Notarzt-Auto): gleicher Weg? Wo passt das gewählte Fahrzeug dort nicht?
+function vergleich(c){
+  const a=RES&&RES.V&&RES.V.A,r=RES&&RES.V&&RES.V[c];
+  if(c==='A'||!a||!a.ok||bewerte(a).fehler)return null;
+  const sperr=new Map();
+  a.rows.forEach(x=>{if(D.kat[c][x.f]!==2)return;const n=strName(x.f),g=sperr.get(n);
+    if(g){g.L+=x.L;if(x.L>g.lmax){g.lmax=x.L;g.p=mitte(x.pts);}}else sperr.set(n,{n,gr:sperrEinfach(c,x.f),L:x.L,lmax:x.L,p:mitte(x.pts)});});
+  let gleich=false;
+  if(r&&r.ok){const fa=new Set(a.rows.map(x=>x.f));const ge=r.rows.reduce((s,x)=>s+(fa.has(x.f)?x.L:0),0);
+    gleich=ge>=0.9*r.laenge_m&&Math.abs(r.laenge_m-a.laenge_m)<=0.1*r.laenge_m;}
+  return {a,gleich,sperr:[...sperr.values()]};}
+
+function zeichneRoute(){if(!kartebereit)return;
+  kreuze.forEach(m=>m.remove());kreuze=[];
+  const r=RES&&RES.V&&RES.V[fz],b=r?bewerte(r):null;
+  const lin=(pts,p)=>({type:'Feature',properties:p,geometry:{type:'LineString',coordinates:pts.map(q=>rel2wgs(q[0],q[1]))}});
+  map.getSource('route').setData({type:'FeatureCollection',features:b&&!b.fehler&&r.ok?r.rows.map(x=>lin(x.pts,{k:x.kat})):[]});
+  const v=RES&&RES.V?vergleich(fz):null,zeigV=v&&!v.gleich;
+  map.getSource('vgl').setData({type:'FeatureCollection',features:zeigV?v.a.rows.map(x=>lin(x.pts,{})):[]});
+  $('#leg-vgl').hidden=!zeigV;$('#leg-x').hidden=!(zeigV&&v.sperr.length);
+  if(zeigV)v.sperr.forEach(s=>{const d=document.createElement('div');d.className='kreuz';d.textContent='✕';d.title=`${s.n}: ${s.gr}`;
+    kreuze.push(new maplibregl.Marker({element:d}).setLngLat(rel2wgs(...s.p)).addTo(map));});
+  // Rest zu Fuss / Halt vor dem Ziel: gepunktete Linie vom Ende der Route zum Ziel
+  const fuss=[];
+  if(r&&r.ok&&!b.fehler&&r.rows.length&&P2){const l=r.rows[r.rows.length-1].pts,e=l[l.length-1],zx=P2[0]-X0,zy=P2[1]-Y0;
+    if(Math.hypot(e[0]-zx,e[1]-zy)>15)fuss.push(lin([e,[zx,zy]],{}));}
+  map.getSource('fuss').setData({type:'FeatureCollection',features:fuss});
+  netzZeigen();}
+
+function einpassen(){if(!kartebereit||!RES||!RES.V)return;const pts=[];
+  const add=r=>{if(r&&r.ok)r.rows.forEach(x=>x.pts.forEach(q=>pts.push(rel2wgs(q[0],q[1]))));};
+  add(RES.V[fz]);const v=vergleich(fz);if(v&&!v.gleich)add(v.a);
+  if(P1)pts.push(lv2wgs(...P1));if(P2)pts.push(lv2wgs(...P2));
+  if(pts.length<2)return;let a=[180,90],b=[-180,-90];pts.forEach(([x,y])=>{a=[Math.min(a[0],x),Math.min(a[1],y)];b=[Math.max(b[0],x),Math.max(b[1],y)];});
+  const W=map.getContainer().clientWidth,H=map.getContainer().clientHeight,px=Math.round(Math.min(60,W*0.08)),py=Math.round(Math.min(70,H*0.12));
+  const lg=$('#legende').offsetHeight||0,pb=H>lg*2.6?lg+24:py;
+  map.fitBounds([a,b],{padding:{top:py+40,bottom:pb,left:px,right:px+30},maxZoom:16.5,duration:document.hidden?0:600});}
+
+// ------------------------------------------------ Oberfläche
+const minTxt=m=>m<1?'unter 1':String(Math.round(m));
+// Masse wie D.profile in netz.json (Karosserie, Höhe, Gewicht); bis das Netz geladen ist
+const PROFIL0={A:{kar:1.94,h:1.64,t:3.1},B:{kar:2.2,h:2.95,t:5.5},C:{kar:2.5,h:3.2,t:17},D:{kar:2.56,h:3.66,t:28.44}};
+function fzKacheln(){const P=D&&D.profile||PROFIL0;
+  $('#fz-grid').innerHTML=FZ.map(c=>`<button class="fz" data-c="${c}" aria-pressed="${c===fz}">${ICON[c]}<b>${NAME[c]}</b><small>${zahl(P[c].kar)} m breit · ${zahl(P[c].h)} m hoch · ${zahl(P[c].t)} t</small></button>`).join('');
+  $('#fz-grid').querySelectorAll('.fz').forEach(b=>b.onclick=()=>setFz(b.dataset.c));}
+function setFz(c){fz=c;bspAkt=bspAkt&&bspAkt.c===c?bspAkt:null;
+  document.querySelectorAll('.fz').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===c));
+  zeichneRoute();ui();if(RES&&RES.V)einpassen();}
+function uiStart(){const w=P1&&P1[0]===WACHE.p[0]&&P1[1]===WACHE.p[1];
+  $('#start-txt').innerHTML=startWahl?`<b>Tippe jetzt auf die Karte, wo das Fahrzeug losfährt.</b> <button class="link" id="b-sa">abbrechen</button>`
+    :`Start: <b>${esc(P1txt)}</b> · <button class="link" id="b-sw">Start ändern</button>${w?'':` · <button class="link" id="b-sr">zurück zur Wache</button>`}`;
+  const sw=$('#b-sw'),sr=$('#b-sr'),sa=$('#b-sa');
+  if(sw)sw.onclick=()=>{startWahl=true;uiStart();};
+  if(sa)sa.onclick=()=>{startWahl=false;uiStart();};
+  if(sr)sr.onclick=()=>{P1=WACHE.p.slice();P1txt=WACHE.n;bspAkt=null;uiStart();zeichnePunkte();rechne();};
+  $('#chips').innerHTML=BSP.map(b=>`<button class="chip" data-id="${b.id}" aria-pressed="${bspAkt===b}">${b.t}</button>`).join('');
+  $('#chips').querySelectorAll('.chip').forEach(x=>x.onclick=()=>beispiel(BSP.find(b=>b.id===x.dataset.id)));}
+function beispiel(b){bspAkt=b;fz=b.c;startWahl=false;
+  P1=b.s.slice();P1txt=ortName(...P1);P2=b.z.slice();P2txt=ortName(...P2);
+  document.querySelectorAll('.fz').forEach(x=>x.setAttribute('aria-pressed',x.dataset.c===fz));
+  $('#treffer').innerHTML='';uiStart();zeichnePunkte();rechne();
+  if(matchMedia('(max-width:820px)').matches)scrollTo({top:0,behavior:'smooth'});}
+
+function banner(cls,ico,txt){const e=$('#banner');e.className='banner '+cls;e.innerHTML=`<span class="ico">${ico}</span><span>${txt}</span>`;e.hidden=false;}
+
+function ui(){
+  const el=$('#ergebnis');
+  $('#ziel-hint').textContent=P2?`Ziel: ${P2txt}. Für ein anderes Ziel tippe wieder auf die Karte.`:'Tippe auf die Karte – oder suche eine Adresse.';
+  if(!P2){el.innerHTML='<p class="leer">Wähle ein Ziel. Dann siehst du hier den Weg.</p>';$('#banner').hidden=true;return;}
+  const kopf=bspAkt?`<p class="bsp-text"><b>Beispiel «${esc(bspAkt.t)}»:</b> ${esc(bspAkt.txt)}</p>`:'';
+  if(rechnet&&!RES){el.innerHTML=kopf+'<p class="leer">Der Weg wird gesucht …</p>';banner('info','…','Weg wird gesucht');return;}
+  if(!RES){el.innerHTML=kopf+'<p class="leer">Es ist ein Fehler passiert. Bitte noch einmal auf die Karte tippen.</p>';$('#banner').hidden=true;return;}
+  if(RES.gleich){el.innerHTML=kopf+'<p class="leer">Start und Ziel liegen am gleichen Ort. Tippe auf ein anderes Ziel.</p>';$('#banner').hidden=true;return;}
+  const r=RES.V[fz],b=bewerte(r),v=vergleich(fz);let h=kopf;
+  if(b.s==='ok'){
+    h+=`<div class="status ok"><span class="ico">✓</span><div><b>Passt.</b>${DER[fz]} kommt durch. Der ganze Weg ist geprüft.</div></div>`;
+    banner('ok','✓',`Passt · ca. ${minTxt(r.fahrzeit_min)} Min.`);}
+  else if(b.s==='warn'){
+    if(b.halt){h+=`<div class="status warn"><span class="ico">!</span><div><b>Fast bis zum Ziel.</b>${b.zm?`${DER[fz]} kommt bis etwa <b>${b.zm} m</b> an das Ziel heran. `:''}${b.sm?`Es fährt etwa ${b.sm} m vom Start entfernt los. `:''}Die Strasse direkt ${b.zm?'am Ziel':'am Start'} ist für dieses Fahrzeug gesperrt oder nicht sicher geprüft.${b.unv>=0.5?` Dazu sind ${Math.round(b.unv)} m nicht sicher geprüft (gelb).`:''}</div></div>`;
+      banner('warn','!',`Fast bis zum Ziel · ca. ${minTxt(r.fahrzeit_min)} Min.`);}
+    else{
+    h+=`<div class="status warn"><span class="ico">!</span><div><b>${b.zufahrt?'Passt fast sicher.':'Vielleicht.'}</b>${b.zufahrt?`Nur die Zufahrt (${Math.round(b.unv)} m) ist nicht sicher geprüft. Sie ist gelb.`:`Auf ${Math.round(b.unv)} m wissen wir nicht sicher, ob ${der(fz)} durchpasst. Diese Stellen sind gelb.`}</div></div>`;
+    banner('warn','!',`${b.zufahrt?'Fast sicher':'Nicht ganz sicher'} · ca. ${minTxt(r.fahrzeit_min)} Min.`);}}
+  else{
+    let grund;const u=r&&r.ursache;
+    if(b.fehler)grund='Interner Fehler: Der Weg enthält eine gesperrte Strasse. Er wird nicht gezeigt.';
+    else if(u==='AUSSERHALB_UNTERSUCHUNGSGEBIET')grund='Das Ziel liegt ausserhalb des Gebiets von GreenRoute (Bern und 10 Nachbargemeinden).';
+    else if(u==='KEIN_NETZ_IN_ZIELNAEHE')grund='Beim Ziel gibt es keine Strasse. Tippe näher an eine Strasse.';
+    else grund=`Für ${der(fz)} führt kein Weg dorthin. Jede Zufahrt ist zu schmal, zu niedrig oder trägt zu wenig.`;
+    h+=`<div class="status bad"><span class="ico">✕</span><div><b>Kein passender Weg.</b>${esc(grund)}</div></div>`;
+    banner('bad','✕','Kein passender Weg');}
+  if(r&&r.ok&&!b.fehler){
+    h+=`<p class="zeit"><b>${minTxt(r.fahrzeit_min)}</b> Minuten · ${(r.laenge_m/1000).toLocaleString('de-CH',{maximumFractionDigits:1})} km <span>(gerechnet, ohne Verkehr)</span></p>`;
+    // Halt vor dem Ziel
+    const d=r.diag||{};
+    if(r.ursache==='ZIEL_ZU_FUSS')h+=`<div class="box"><p>Das Fahrzeug hält etwa <b>${Math.round(d.ziel_rest_m||0)} m vor dem Ziel</b>, weil das schneller ist als die letzte Strasse. Den Rest zu Fuss (gepunktet).</p></div>`;
+    // Gelbe Stellen benennen
+    if(b.s==='warn'&&b.unv>=0.5){const g=[];let last=null;
+      r.rows.forEach(x=>{if(x.kat===0){last=null;return;}const n=strName(x.f);if(last&&last.n===n)last.L+=x.L;else g.push(last={n,L:x.L,gr:unsicherEinfach(fz,x.f)});});
+      const top=g.sort((p,q)=>q.L-p.L).slice(0,3);
+      if(top.length)h+=`<div class="box gelb"><p>Nicht sicher geprüft:</p><ul>${top.map(x=>`<li><b>${esc(x.n)}</b> (${Math.round(x.L)} m): ${esc(x.gr)}</li>`).join('')}</ul></div>`;}
+    if(kurveHart(r))h+=`<div class="box kurve"><p>Auf dem Weg ist eine <b>sehr enge Kurve</b>. Ob ${der(fz)} ohne Rangieren um die Ecke kommt, muss man vor Ort prüfen.</p></div>`;
+  }
+  // Vergleich mit dem Notarzt-Auto
+  if(v){
+    if(v.gleich)h+=`<div class="box vgl"><p>Gleicher Weg wie das kleine Notarzt-Auto.</p></div>`;
+    else{
+      let t=r&&r.ok?`<p>Das kleine Notarzt-Auto würde anders fahren (graue Linie)`:`<p>Das kleine Notarzt-Auto kommt hin (graue Linie)`;
+      if(v.sperr.length){t+=`. ${r&&r.ok?'Dort':'Auf seinem Weg'} passt ${der(fz)} nicht durch:</p><ul>${v.sperr.slice(0,3).map(s=>`<li><b>${esc(s.n)}</b>: ${esc(s.gr)}</li>`).join('')}</ul>`;}
+      else t+=`. Sein Weg ist für ${der(fz)} nicht sicher geprüft oder hat eine zu enge Kurve.</p>`;
+      if(r&&r.ok&&!b.fehler){const dm=r.fahrzeit_min-v.a.fahrzeit_min;
+        t+=`<p style="margin-top:6px">${Math.abs(dm)<0.5?'Trotzdem etwa gleich schnell.':dm>0?`Der passende Weg dauert etwa <b>${minTxt(dm)} Min. länger</b>. Dafür kommt das Fahrzeug sicher an.`:'Der passende Weg ist sogar etwas schneller.'}</p>`;}
+      h+=`<div class="box vgl">${t}</div>`;}
+  }
+  // Alle Fahrzeuge zum gleichen Ziel
+  h+=`<h3>Alle Fahrzeuge zum gleichen Ziel</h3><ul class="alle">${FZ.map(c=>{const x=RES.V[c],e=bewerte(x);
+    const st=e.s==='ok'?'passt':e.s==='warn'?'nicht ganz sicher':'kein Weg';
+    return `<li><button data-c="${c}" aria-pressed="${c===fz}">${ICON[c]}<span><b>${NAME[c]}</b><br><small><span class="pkt ${e.s}"></span>${st}</small></span><span class="w">${x&&x.ok&&!e.fehler?minTxt(x.fahrzeit_min)+' Min.':'–'}</span></button></li>`;}).join('')}</ul>`;
+  el.innerHTML=h;
+  el.querySelectorAll('.alle button').forEach(x=>x.onclick=()=>setFz(x.dataset.c));
+}
+
+// ------------------------------------------------ Adresssuche (swisstopo, nur Treffer im Gebiet)
+let _box=null;
+function gebietBox(){if(_box)return _box;const N=D.nodes;let a=Infinity,b=Infinity,c=-Infinity,d=-Infinity;
+  for(let i=0;i<N.length;i+=2){const x=N[i],y=N[i+1];if(x<a)a=x;if(x>c)c=x;if(y<b)b=y;if(y>d)d=y;}
+  return _box=[Math.floor(a/100+X0),Math.floor(b/100+Y0),Math.ceil(c/100+X0),Math.ceil(d/100+Y0)];}
+async function suche(){
+  const out=$('#treffer'),q=$('#such-in').value.trim();
+  if(!D){out.innerHTML='<p>Einen Moment – das Strassennetz lädt noch.</p>';return;}
+  if(!q){out.innerHTML='<p>Bitte eine Adresse eingeben, z. B. «Kramgasse 49, Bern».</p>';return;}
+  out.innerHTML='<p>Suche …</p>';
+  try{const B=gebietBox();
+    const r=await fetch('https://api3.geo.admin.ch/rest/services/api/SearchServer?type=locations&origins=address&limit=20&sr=2056&searchText='+encodeURIComponent(q));
+    const j=await r.json();const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/<[^>]+>/g,'');
+    const w=norm(q).split(/[^a-z]+/).filter(x=>x.length>=4).map(x=>x.slice(0,4));
+    const a=(j.results||[]).filter(x=>{const e=x.attrs.y,n=x.attrs.x,l=norm(x.attrs.label);return e>=B[0]&&e<=B[2]&&n>=B[1]&&n<=B[3]&&(!w.length||w.some(t=>l.includes(t)));}).slice(0,5);
+    if(!a.length){out.innerHTML='<p>Keine passende Adresse in Bern und den 10 Nachbargemeinden gefunden.</p>';return;}
+    out.innerHTML=a.map((x,i)=>`<button data-i="${i}">${esc(x.attrs.label.replace(/<[^>]+>/g,''))}</button>`).join('');
+    out.querySelectorAll('button').forEach(bt=>bt.onclick=()=>{const x=a[+bt.dataset.i].attrs;bspAkt=null;startWahl=false;
+      P2=[x.y,x.x];P2txt=x.label.replace(/<[^>]+>/g,'');out.innerHTML='';uiStart();zeichnePunkte();rechne();
+      if(matchMedia('(max-width:820px)').matches)scrollTo({top:0,behavior:'smooth'});});
+  }catch(e){out.innerHTML='<p>Die Adresssuche ist gerade nicht erreichbar. Tippe das Ziel direkt auf der Karte an.</p>';}
+}
+$('#such-form').onsubmit=e=>{e.preventDefault();suche();};
+$('#cb-netz').onchange=netzZeigen;
+
+fzKacheln();uiStart();
+baueKarte();
+laden();
+})();
+</script>
+</body></html>

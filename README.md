@@ -2,7 +2,7 @@
 
 *English: Vehicle-specific emergency routing for Bern. For each street and each vehicle class, GreenRoute decides whether width, height and weight allow passage, and routes only over streets the vehicle fits. Research prototype, not approved for operational use.*
 
-**[Web-App öffnen](https://jonasbader7.github.io/GreenRoute/)** · [Portfolio](https://jonasbader7.github.io/Portfoliopage/)
+**[Web-App öffnen](https://jonasbader7.github.io/GreenRoute/)** · **[Einfache Version](https://jonasbader7.github.io/GreenRoute/einfach.html)** · [Portfolio](https://jonasbader7.github.io/Portfoliopage/)
 
 ![GreenRoute-Web-App: Karte von Bern, Strassen nach Befahrbarkeit eingefärbt](https://jonasbader7.github.io/Portfoliopage/img/bors-app.jpg)
 
@@ -38,6 +38,7 @@ Dieses Repository enthält die Web-App und im Ordner [`pipeline/`](pipeline/) di
 ## Dateien
 
 - `index.html` – Web-App (Karte, Routing für die Fahrzeugklassen A–D, Routenvergleich, Einsatzablauf Zentrale/Fahrzeug mit Fahrt und Neuberechnung, Hindernismeldungen, Strassenbefund, Ebenen)
+- `einfach.html` – «GreenRoute einfach»: dieselbe Berechnung in drei Schritten für Laien (Fahrzeug, Ziel, Ergebnis grün/gelb/rot)
 - `bors_router.js` – Routing-Kern, direkte Übertragung des QGIS-Routers V9.2e (Ersatzanschluss nach Gesamtkosten)
 - `netz.json` – Strassennetz V9.2j mit Bewertung je Fahrzeugklasse (Netzmaster `BORS_Netzmaster_V9_20261111_1709`)
 - `netz_aenderungen.csv` – die 1 265 Statuswechsel gegenüber Version 17 (Abschnitt × Klasse, alle von ungeklärt nach validiert)
@@ -48,6 +49,13 @@ Dieses Repository enthält die Web-App und im Ordner [`pipeline/`](pipeline/) di
 ## Versionsgeschichte
 
 Was sich von Version zu Version geändert hat, neuste zuerst.
+
+### Neu in Version 21 (24.11.2026): «GreenRoute einfach» für alle ohne Vorwissen
+
+- Neue Seite [`einfach.html`](https://jonasbader7.github.io/GreenRoute/einfach.html) neben der ausführlichen Web-App: 1. Fahrzeug wählen (Notarzt-Auto, Krankenwagen, Feuerwehrauto, grosses Feuerwehrauto), 2. Ziel antippen oder Adresse suchen, 3. Ergebnis in einem Satz: grün «Passt», gelb «Vielleicht» oder «Fast bis zum Ziel», rot «Kein passender Weg».
+- Graue Linie = Weg des Notarzt-Autos; rote ✕ zeigen, wo das gewählte Fahrzeug dort nicht durchpasst, mit Grund in Alltagssprache (z. B. «erlaubt nur 15 t (Fahrzeug 17 t)»). Dazu alle Fahrzeuge zum gleichen Ziel, vier Beispiele (zu hoch, zu schwer, zu schmal, zu enge Kurve; auch als `einfach.html#s1` bis `#s4`) und «Alle Strassen einfärben».
+- Gleicher Router (`bors_router.js`), gleiches Netz (`netz.json`) und Baustellen der Stadt Bern live wie in Version 20; weggelassen ist nur der Einsatzablauf. Ohne Zählung (Analytics).
+- Geprüft im Browser (lokal): Beispiele S1 und S2 mit denselben Zeiten wie Version 20, Kramgasse für die grosse Feuerwehr rot (28 t), Handy und Desktop, keine Konsolenfehler.
 
 ### Neu in Version 20 (20.11.2026): Route folgt dem Fahrzeug, Hindernisse melden, mehrere Fahrzeuge
 
