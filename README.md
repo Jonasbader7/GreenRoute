@@ -16,6 +16,21 @@
 | **Technik** | Python (QGIS/PyQGIS, SQLite, NumPy) für die Daten, JavaScript (MapLibre GL, Web Worker) für die Web-App |
 | **Stand** | Forschungsprototyp – keine Einsatzfreigabe |
 
+## Abgabe BCS HS26 (Gruppe 5, Prototyp)
+
+| Was | Wo |
+|---|---|
+| Prototyp (Web-App) | https://jonasbader7.github.io/GreenRoute/ – oben «Beides» wählen, im Tab «Einsatz» einen Notruf simulieren |
+| Einfache Version für Laien | https://jonasbader7.github.io/GreenRoute/einfach.html |
+| Quellcode Web-App | dieses Repository, Hauptordner (`index.html`, `einfach.html`, `bors_router.js`) |
+| Quellcode Datenaufbereitung (Python/QGIS) | [`pipeline/`](pipeline/) – Breitenmessung, Netzmaster, QGIS-Router, Export nach `netz.json` |
+| Prüf- und Analyseskripte | [`pruefungen/`](pruefungen/) – Belege für die Zahlen im Produktbericht |
+| Daten der Web-App | `netz.json`, `basis.json`, `parkfelder.json` (aus der Pipeline erzeugt) |
+
+**Lokal starten:** Repository herunterladen («Code» → «Download ZIP»), im Ordner `python -m http.server 8000` ausführen und http://localhost:8000 öffnen. Die App braucht keinen Server-Code, nur einen einfachen Webserver.
+
+**Nicht im Repository:** Rohdaten (amtliche Vermessung, GeoPackages des Netzmasters, mehrere GB) und das QGIS-Projekt, das diese lokalen Daten braucht. Wie die Kette läuft, steht in [`pipeline/README.md`](pipeline/README.md).
+
 ## Wie es funktioniert
 
 *GreenRoute ist der Produktname des Teams. Im Repository, in den Python-Skripten und in den Dateinamen heisst der technische Prototyp weiterhin BORS (z. B. `bors_router.js`, Netzmaster `BORS_Netzmaster_…`); die Versionsgeschichte unten nennt ihn so, wie er damals hiess.*
@@ -45,6 +60,7 @@ Dieses Repository enthält die Web-App und im Ordner [`pipeline/`](pipeline/) di
 - `basis.json` – Ersatz-Grundkarte aus der amtlichen Vermessung (Gebäude, Wald, Gewässer)
 - `parkfelder.json` – Parkfeld-Flächen für die Ebene «Parkfelder» (dieselben, die von der Fahrbahnbreite abgezogen werden)
 - `pipeline/` – Python-Skripte, die das Netz messen, bewerten und für die Web-App exportieren (Übersicht in `pipeline/README.md`)
+- `pruefungen/` – Prüf- und Analyseskripte (node, Python) zu Router, Netz und Web-App (Übersicht in `pruefungen/README.md`)
 
 ## Versionsgeschichte
 
